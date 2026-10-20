@@ -146,9 +146,16 @@ npm run preview   # http://localhost:4321/WebSite/
 
 - Sin framework de interfaz: solo CSS con variables propias
   (`src/styles/tokens.css`).
-- Tema oscuro por defecto, con tema claro según `prefers-color-scheme`.
-- Fuentes autoalojadas con `@fontsource-variable` (Newsreader, Inter,
-  JetBrains Mono). No hay peticiones a terceros en tiempo de ejecución.
+- Tema oscuro por defecto, con tema claro según `prefers-color-scheme` y
+  conmutador manual.
+- Fuentes autoalojadas con `@fontsource-variable`: Inter para la interfaz y
+  los títulos, Newsreader solo para la prosa larga y JetBrains Mono para el
+  código y los datos técnicos. No hay peticiones a terceros en tiempo de
+  ejecución.
+- Jerarquía por tamaño, peso y líneas: sin sombras, degradados ni superficies
+  curvas. El color de acento se reserva para los enlaces y los estados activos.
+- El resaltado de código tiene dos paletas (`github-light` y
+  `github-dark-dimmed`) y sigue al tema del sitio, no al del sistema.
 - Todo el movimiento respeta `prefers-reduced-motion`.
 
 ## Licencia
