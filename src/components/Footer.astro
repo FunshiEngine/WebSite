@@ -13,7 +13,7 @@ const anio = SITE.copyright;
       <Logo />
       <p class="pie__lema">{SITE.descripcionCorta}</p>
       <p class="pie__licencia">
-        Codigo y documentacion bajo licencia <strong>Apache 2.0</strong>.
+        Código y documentación bajo licencia <strong>Apache 2.0</strong>.
       </p>
     </div>
 
@@ -30,8 +30,8 @@ const anio = SITE.copyright;
       </ul>
     </nav>
 
-    <nav class="pie__columna" aria-label="Documentacion">
-      <h2 class="pie__titulo">Documentacion</h2>
+    <nav class="pie__columna" aria-label="Documentación">
+      <h2 class="pie__titulo">Documentación</h2>
       <ul class="pie__lista">
         <li><a href={ruta('/docs/')}>Indice general</a></li>
         <li><a href={ruta('/docs/arquitectura/')}>Arquitectura de la organizacion</a></li>
@@ -54,14 +54,14 @@ const anio = SITE.copyright;
   </div>
 
   <div class="pie__barra container container--wide">
-    <p>&copy; {anio} {SITE.organizacion}. Sitio generado con Astro.</p>
-    <p class="pie__hecho">Hecho con criterio, sin dependencias de interfaz.</p>
+    <p>&copy; {anio} {SITE.organizacion}. Documentación bajo licencia Apache 2.0.</p>
+    <p class="pie__hecho">Sitio estático generado con Astro.</p>
   </div>
 </footer>
 
 <style>
   .pie {
-    margin-block-start: var(--space-11);
+    margin-block-start: var(--space-10);
     border-block-start: var(--border-width) solid var(--border-subtle);
     background: var(--surface-sunken);
   }
@@ -109,12 +109,9 @@ const anio = SITE.copyright;
   }
 
   .pie__titulo {
-    font-family: var(--font-mono);
-    font-size: var(--text-2xs);
-    font-weight: 500;
-    letter-spacing: var(--tracking-widest);
-    text-transform: uppercase;
-    color: var(--text-subtle);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--text);
     margin-block-end: var(--space-3);
   }
 

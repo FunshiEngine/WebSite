@@ -76,31 +76,28 @@ const dentroDeSeccion = seccion ? nodo.id === seccion || nodo.id.startsWith(`${s
 
   .nodo__enlace {
     display: block;
-    padding: 0.32rem 0.6rem;
+    padding: 0.3rem 0.6rem;
     padding-inline-start: calc(0.6rem + var(--nivel) * 0.85rem);
     border-radius: var(--radius-sm);
     font-size: var(--text-sm);
     color: var(--text-muted);
-    line-height: 1.4;
-    transition:
-      color var(--duration-fast) var(--ease-out),
-      background-color var(--duration-fast) var(--ease-out);
+    line-height: 1.45;
+    transition: color var(--duration-fast) var(--ease-out);
   }
 
   .nodo__enlace:hover {
     color: var(--text);
-    background: var(--surface-hover);
   }
 
   .nodo--seccion > .nodo__enlace {
     color: var(--text);
-    font-weight: 550;
+    font-weight: 600;
   }
 
   .nodo__enlace[aria-current='page'] {
     color: var(--accent);
-    background: var(--accent-soft);
     font-weight: 550;
+    box-shadow: inset 2px 0 0 var(--accent);
   }
 
   .nodo__hijos {

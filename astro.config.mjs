@@ -44,6 +44,10 @@ export default defineConfig({
         light: 'github-light',
         dark: 'github-dark-dimmed',
       },
+      // Sin color por defecto: los dos temas se exponen como variables
+      // (`--shiki-light` y `--shiki-dark`) y el CSS global elige el que
+      // corresponde al tema del sitio, no al del sistema.
+      defaultColor: false,
       wrap: true,
     },
   },

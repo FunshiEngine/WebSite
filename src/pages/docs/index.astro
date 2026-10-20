@@ -37,12 +37,12 @@ const nombreProyecto = new Map(proyectos.map((p) => [p.data.clave, p.data.nombre
 
 <BaseLayout
   titulo="Documentación"
-  descripcion="La documentacion de la organizacion FunshiEngine: guias, arquitectura de los proyectos, manuales de uso y convenciones de trabajo."
+  descripcion="La documentación de la organización FunshiEngine: guías, arquitectura de los proyectos, manuales de uso y convenciones de trabajo."
 >
   <PageHeader
-    eyebrow="Documentación"
+    etiqueta="Documentación"
     titulo="Documentación"
-    lede="Manuales de uso, arquitectura, convenciones y notas tecnicas de cada proyecto. Vive junto al codigo y se actualiza con el."
+    lede="Manuales de uso, arquitectura, convenciones y notas técnicas de cada proyecto. Vive junto al código y se actualiza con él."
   />
 
   <div class="secciones container">
@@ -100,7 +100,7 @@ const nombreProyecto = new Map(proyectos.map((p) => [p.data.clave, p.data.nombre
   .seccion__conteo {
     font-family: var(--font-mono);
     font-size: var(--text-2xs);
-    letter-spacing: var(--tracking-wide);
+    letter-spacing: var(--tracking-normal);
     color: var(--text-subtle);
   }
 
@@ -116,7 +116,7 @@ const nombreProyecto = new Map(proyectos.map((p) => [p.data.clave, p.data.nombre
     display: grid;
     gap: var(--space-1);
     padding: var(--space-4);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-sm);
     border: var(--border-width) solid transparent;
     transition:
       background-color var(--duration-fast) var(--ease-out),
@@ -133,7 +133,7 @@ const nombreProyecto = new Map(proyectos.map((p) => [p.data.clave, p.data.nombre
     flex-wrap: wrap;
     align-items: baseline;
     gap: var(--space-2);
-    font-weight: 550;
+    font-weight: 600;
     font-size: var(--text-md);
   }
 
@@ -145,10 +145,10 @@ const nombreProyecto = new Map(proyectos.map((p) => [p.data.clave, p.data.nombre
     font-family: var(--font-mono);
     font-size: var(--text-2xs);
     font-weight: 400;
-    letter-spacing: var(--tracking-wide);
+    letter-spacing: var(--tracking-normal);
     color: var(--text-subtle);
-    padding: 0.1rem 0.45rem;
-    border-radius: var(--radius-pill);
+    padding: 0.05rem 0.4rem;
+    border-radius: var(--radius-sm);
     border: var(--border-width) solid var(--border-subtle);
   }
 

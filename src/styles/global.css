@@ -107,7 +107,7 @@ ol {
 
 :focus-visible {
   outline: 2px solid var(--focus-ring);
-  outline-offset: 3px;
+  outline-offset: 2px;
   border-radius: var(--radius-sm);
 }
 
@@ -169,9 +169,9 @@ hr {
   top: var(--space-4);
   z-index: 100;
   padding: var(--space-3) var(--space-5);
-  background: var(--accent);
-  color: var(--accent-contrast);
-  border-radius: var(--radius-md);
+  background: var(--text);
+  color: var(--text-inverse);
+  border-radius: var(--radius-sm);
   font-weight: 600;
   transform: translateY(-200%);
   transition: transform var(--duration-base) var(--ease-out);
@@ -181,29 +181,12 @@ hr {
   transform: translateY(0);
 }
 
-/* Etiqueta superior: el "eyebrow" que precede a cada seccion. */
-.eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  font-family: var(--font-mono);
-  font-size: var(--text-2xs);
+/* Rotulo: el texto breve que precede al titulo de una seccion. */
+.rotulo {
+  font-size: var(--text-sm);
   font-weight: 500;
-  letter-spacing: var(--tracking-widest);
-  text-transform: uppercase;
-  color: var(--accent);
-}
-
-.eyebrow::before {
-  content: '';
-  width: 1.5rem;
-  height: 1px;
-  background: currentColor;
-  opacity: 0.55;
-}
-
-.eyebrow--plain::before {
-  display: none;
+  color: var(--text-subtle);
+  margin-block-end: var(--space-2);
 }
 
 .section-heading {
@@ -213,8 +196,8 @@ hr {
 
 .section-lede {
   color: var(--text-muted);
-  font-size: var(--text-lg);
-  max-width: 60ch;
+  font-size: var(--text-md);
+  max-width: 62ch;
   line-height: var(--leading-snug);
 }
 
@@ -222,9 +205,12 @@ hr {
 /* Contenido Markdown / MDX (prosa)                                   */
 /* ------------------------------------------------------------------ */
 
+/* La prosa es el unico lugar donde se usa la serif: texto largo para
+ * leer con calma. Los titulos y la interfaz usan la sans. */
 .prose {
-  font-size: var(--text-md);
-  line-height: var(--leading-normal);
+  font-family: var(--font-serif);
+  font-size: var(--text-lg);
+  line-height: 1.72;
   color: var(--text);
 }
 
@@ -235,6 +221,7 @@ hr {
 .prose h2,
 .prose h3,
 .prose h4 {
+  font-family: var(--font-sans);
   margin-block-start: var(--space-8);
   scroll-margin-top: calc(var(--header-height) + var(--space-5));
 }
@@ -290,17 +277,14 @@ hr {
 
 .prose blockquote {
   margin-inline: 0;
-  padding: var(--space-3) var(--space-5);
-  border-inline-start: 2px solid var(--accent);
-  background: var(--surface-inset);
-  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  padding: var(--space-2) 0 var(--space-2) var(--space-5);
+  border-inline-start: 2px solid var(--border-strong);
   color: var(--text-muted);
-  font-style: italic;
 }
 
 .prose code {
   font-family: var(--font-mono);
-  font-size: 0.85em;
+  font-size: 0.82em;
   padding: 0.15em 0.4em;
   border-radius: var(--radius-sm);
   background: var(--surface-inset);
@@ -311,12 +295,13 @@ hr {
 .prose pre {
   margin-block: var(--space-5);
   padding: var(--space-4) var(--space-5);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   border: var(--border-width) solid var(--border);
-  background: var(--surface-sunken) !important;
+  background: var(--code-bg) !important;
   overflow-x: auto;
+  font-family: var(--font-mono);
   font-size: var(--text-sm);
-  line-height: 1.6;
+  line-height: 1.65;
 }
 
 .prose pre code {
@@ -326,14 +311,29 @@ hr {
   font-size: inherit;
 }
 
+/* Resaltado de codigo: Shiki deja los dos temas en variables y el sitio
+ * elige el que corresponde a su tema, no al del sistema. */
+.prose pre,
+.prose pre code,
+.prose pre span {
+  color: var(--shiki-dark) !important;
+}
+
+:root[data-theme='light'] .prose pre,
+:root[data-theme='light'] .prose pre code,
+:root[data-theme='light'] .prose pre span {
+  color: var(--shiki-light) !important;
+}
+
 .prose img {
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   border: var(--border-width) solid var(--border);
 }
 
 .prose table {
   width: 100%;
   border-collapse: collapse;
+  font-family: var(--font-sans);
   font-size: var(--text-base);
   display: block;
   overflow-x: auto;
@@ -375,25 +375,4 @@ h3:hover > .heading-anchor,
 h4:hover > .heading-anchor,
 .heading-anchor:focus-visible {
   opacity: 1;
-}
-
-/* ------------------------------------------------------------------ */
-/* Transiciones de pagina                                              */
-/* ------------------------------------------------------------------ */
-
-@media (prefers-reduced-motion: no-preference) {
-  @keyframes fade-rise {
-    from {
-      opacity: 0;
-      transform: translateY(12px);
-    }
-    to {
-      opacity: 1;
-      transform: none;
-    }
-  }
-
-  .reveal {
-    animation: fade-rise var(--duration-slow) var(--ease-out) both;
-  }
 }

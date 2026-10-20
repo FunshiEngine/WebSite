@@ -31,7 +31,7 @@ const siguiente = indice >= 0 && indice < enSeccion.length - 1 ? enSeccion[indic
 >
   <Content />
 
-  <nav class="vecinos" aria-label="Paginas vecinas">
+  <nav class="vecinos" aria-label="Páginas vecinas">
     {
       anterior && (
         <a class="vecino" href={rutaDoc(anterior.id)} rel="prev">
@@ -65,17 +65,14 @@ const siguiente = indice >= 0 && indice < enSeccion.length - 1 ? enSeccion[indic
     display: grid;
     gap: var(--space-1);
     padding: var(--space-4);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-sm);
     border: var(--border-width) solid var(--border);
-    background: var(--surface);
-    transition:
-      border-color var(--duration-fast) var(--ease-out),
-      background-color var(--duration-fast) var(--ease-out);
+    background: transparent;
+    transition: border-color var(--duration-fast) var(--ease-out);
   }
 
   .vecino:hover {
-    border-color: var(--accent-line);
-    background: var(--surface-raised);
+    border-color: var(--border-strong);
   }
 
   .vecino--derecha {
@@ -83,19 +80,18 @@ const siguiente = indice >= 0 && indice < enSeccion.length - 1 ? enSeccion[indic
   }
 
   .vecino__etiqueta {
-    font-family: var(--font-mono);
-    font-size: var(--text-2xs);
-    letter-spacing: var(--tracking-widest);
-    text-transform: uppercase;
+    font-size: var(--text-xs);
     color: var(--text-subtle);
   }
 
   .vecino__titulo {
-    font-weight: 550;
+    font-weight: 500;
     font-size: var(--text-base);
+    color: var(--text-muted);
+    transition: color var(--duration-fast) var(--ease-out);
   }
 
   .vecino:hover .vecino__titulo {
-    color: var(--accent);
+    color: var(--text);
   }
 </style>

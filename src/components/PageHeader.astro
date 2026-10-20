@@ -6,15 +6,15 @@
 import { ruta } from '../lib/site';
 
 interface Props {
-  /** Etiqueta superior (por ejemplo, "Proyecto" o "Documentacion"). */
-  eyebrow?: string;
+  /** Etiqueta superior (por ejemplo, "Proyecto" o "Documentación"). */
+  etiqueta?: string;
   titulo: string;
   lede?: string;
   /** Texto del enlace de vuelta, si lo hay. */
   volver?: { texto: string; href: string };
 }
 
-const { eyebrow, titulo, lede, volver } = Astro.props;
+const { etiqueta, titulo, lede, volver } = Astro.props;
 ---
 
 <header class="cabecera-pagina">
@@ -36,7 +36,7 @@ const { eyebrow, titulo, lede, volver } = Astro.props;
       )
     }
 
-    {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+    {etiqueta && <p class="rotulo">{etiqueta}</p>}
     <h1 class="cabecera-pagina__titulo">{titulo}</h1>
     {lede && <p class="cabecera-pagina__lede">{lede}</p>}
 
@@ -48,9 +48,9 @@ const { eyebrow, titulo, lede, volver } = Astro.props;
 
 <style>
   .cabecera-pagina {
-    padding-block: var(--space-8) var(--space-7);
+    padding-block: var(--space-8) var(--space-6);
     display: grid;
-    gap: var(--space-4);
+    gap: var(--space-3);
   }
 
   .cabecera-pagina__volver {
@@ -58,6 +58,7 @@ const { eyebrow, titulo, lede, volver } = Astro.props;
     align-items: center;
     gap: var(--space-2);
     width: fit-content;
+    margin-block-end: var(--space-2);
     font-size: var(--text-sm);
     color: var(--text-muted);
     transition: color var(--duration-fast) var(--ease-out);
@@ -69,21 +70,22 @@ const { eyebrow, titulo, lede, volver } = Astro.props;
 
   .cabecera-pagina__titulo {
     font-size: var(--text-3xl);
-    max-width: 22ch;
+    max-width: 26ch;
   }
 
   .cabecera-pagina__lede {
     color: var(--text-muted);
-    font-size: var(--text-lg);
-    max-width: 62ch;
+    font-size: var(--text-md);
+    max-width: 68ch;
     line-height: var(--leading-snug);
   }
 
   .cabecera-pagina__acciones {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-3);
-    margin-block-start: var(--space-2);
+    align-items: center;
+    gap: var(--space-2);
+    margin-block-start: var(--space-3);
   }
 
   .cabecera-pagina__acciones:empty {

@@ -24,21 +24,20 @@ const { texto, variante = 'neutro', conPunto = false } = Astro.props;
     display: inline-flex;
     align-items: center;
     gap: var(--space-2);
-    padding: 0.2rem 0.55rem;
-    border-radius: var(--radius-pill);
+    padding: 0.1rem 0.45rem;
+    border-radius: var(--radius-sm);
     border: var(--border-width) solid var(--border);
-    background: var(--surface-inset);
+    background: transparent;
     font-family: var(--font-mono);
     font-size: var(--text-2xs);
-    font-weight: 500;
-    letter-spacing: var(--tracking-wide);
+    font-weight: 400;
+    letter-spacing: var(--tracking-normal);
     color: var(--text-muted);
     white-space: nowrap;
   }
 
   .etiqueta--acento {
     color: var(--accent);
-    background: var(--accent-soft);
     border-color: var(--accent-line);
   }
 

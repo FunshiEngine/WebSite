@@ -10,47 +10,47 @@ const proyectos = await obtenerProyectos();
 
 <BaseLayout
   titulo="Acerca de"
-  descripcion="Que es la organizacion FunshiEngine, como esta construida y como contribuir a sus proyectos."
+  descripcion="Qué es la organización FunshiEngine, cómo está construida y cómo contribuir a sus proyectos."
 >
   <PageHeader
-    eyebrow="Acerca de"
-    titulo="Una organización pequeña con una idea clara"
+    etiqueta="Acerca de"
+    titulo="Qué es FunshiEngine"
     lede="FunshiEngine desarrolla un motor de juegos en tiempo real y las herramientas que lo vuelven manejable: una terminal, un asistente y un agente."
   />
 
-  <div class="contenido container container--prose">
+  <div class="contenido container">
     <section class="bloque">
-      <h2>Que hacemos</h2>
+      <h2>Qué hacemos</h2>
       <p>
-        La organizacion mantiene seis repositorios alrededor de una misma idea: un
-        motor de juegos escrito en C++17 cuyo nucleo no depende de ninguna API
-        grafica. El motor define un <strong>contrato de render</strong> —que recursos,
+        La organización mantiene seis repositorios alrededor de una misma idea: un
+        motor de juegos escrito en C++17 cuyo núcleo no depende de ninguna API
+        gráfica. El motor define un <strong>contrato de render</strong> —qué recursos,
         estados y uniformes necesita— y cada backend lo implementa con su dialecto.
       </p>
       <p>
-        Alrededor del motor hay un editor completo, una interfaz de linea de comandos
-        que habla JSON, un asistente de escritorio con recuperacion augmentada y un
-        agente de codigo que opera sobre el motor. Todo se apoya en la misma
-        documentacion y en las mismas convenciones.
+        Alrededor del motor hay un editor completo, una interfaz de línea de comandos
+        que habla JSON, un asistente de escritorio con recuperación aumentada y un
+        agente de código que opera sobre el motor. Todo se apoya en la misma
+        documentación y en las mismas convenciones.
       </p>
     </section>
 
     <section class="bloque">
-      <h2>Como esta organizado</h2>
+      <h2>Cómo está organizado</h2>
       <p>
         Cada repositorio tiene una responsabilidad y una regla de dependencia clara:
       </p>
       <ul>
         <li>
-          <strong>El nucleo no depende de nadie.</strong> Define los contratos y la
-          logica del motor; no sabe que API grafica hay debajo.
+          <strong>El núcleo no depende de nadie.</strong> Define los contratos y la
+          lógica del motor; no sabe qué API gráfica hay debajo.
         </li>
         <li>
-          <strong>Los backends dependen del nucleo.</strong> Traducen el contrato a su
-          API y no tocan la logica del motor.
+          <strong>Los backends dependen del núcleo.</strong> Traducen el contrato a su
+          API y no tocan la lógica del motor.
         </li>
         <li>
-          <strong>Los frentes dependen del nucleo, no de un backend.</strong> La
+          <strong>Los frentes dependen del núcleo, no de un backend.</strong> La
           terminal, el asistente y el agente pueden trabajar con el motor sin
           dibujar nada.
         </li>
@@ -74,15 +74,15 @@ const proyectos = await obtenerProyectos();
     </section>
 
     <section class="bloque">
-      <h2>Como trabajamos</h2>
+      <h2>Cómo trabajamos</h2>
       <p>
-        Las convenciones estan escritas y se aplican en todos los repositorios:
-        codigo, comentarios y documentacion en español, licencia Apache 2.0, commits
-        atomicos y convencionales, y documentacion sincronizada con el codigo que
+        Las convenciones están escritas y se aplican en todos los repositorios:
+        código, comentarios y documentación en español, licencia Apache 2.0, commits
+        atómicos y convencionales, y documentación sincronizada con el código que
         describe.
       </p>
       <p>
-        La guia completa esta en la <a href={ruta('/docs/guia/estilo-de-codigo/')}>documentacion
+        La guía completa está en la <a href={ruta('/docs/guia/estilo-de-codigo/')}>documentación
         de estilo</a> y en la de <a href={ruta('/docs/guia/ramas-y-commits/')}>ramas y commits</a>.
       </p>
     </section>
@@ -90,7 +90,7 @@ const proyectos = await obtenerProyectos();
     <section class="bloque">
       <h2>Licencia</h2>
       <p>
-        El codigo y la documentacion de los proyectos de la organizacion se publican
+        El código y la documentación de los proyectos de la organización se publican
         bajo la licencia <strong>Apache 2.0</strong>. Puede usarse, modificarse y
         distribuirse, incluidos los usos comerciales, citando la licencia.
       </p>
@@ -98,9 +98,9 @@ const proyectos = await obtenerProyectos();
 
     <section class="bloque bloque--cierre">
       <h2>Empezar</h2>
-      <p>La via mas corta para entender el conjunto es la guia de primeros pasos.</p>
+      <p>La vía más corta para entender el conjunto es la guía de primeros pasos.</p>
       <p class="acciones">
-        <Boton href={ruta('/docs/guia/inicio/')}>Leer la guia</Boton>
+        <Boton href={ruta('/docs/guia/inicio/')}>Leer la guía</Boton>
         <Boton variante="secundario" href={SITE.repositorio} externo>Ver en GitHub</Boton>
       </p>
     </section>
@@ -117,6 +117,7 @@ const proyectos = await obtenerProyectos();
   .bloque {
     display: grid;
     gap: var(--space-3);
+    max-width: var(--layout-prose);
   }
 
   .bloque h2 {
@@ -125,7 +126,7 @@ const proyectos = await obtenerProyectos();
 
   .bloque p,
   .bloque li {
-    color: var(--text-muted);
+    color: var(--text);
   }
 
   .bloque strong {
@@ -155,7 +156,7 @@ const proyectos = await obtenerProyectos();
     gap: var(--space-1);
     padding: var(--space-3) var(--space-4);
     margin-inline: calc(var(--space-4) * -1);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-sm);
     border: var(--border-width) solid transparent;
     text-decoration: none !important;
     transition:
@@ -170,7 +171,7 @@ const proyectos = await obtenerProyectos();
 
   .proyectos__nombre {
     color: var(--text);
-    font-weight: 550;
+    font-weight: 600;
   }
 
   .proyectos__lema {

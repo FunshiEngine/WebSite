@@ -11,7 +11,7 @@ import { construirArbolDocs } from '../lib/docs';
 interface Props {
   titulo: string;
   descripcion: string;
-  eyebrow?: string;
+  etiqueta?: string;
   /** Secccion a la que pertenece la pagina (para la navegacion). */
   seccion?: string;
   /** Identificador de la pagina activa en el arbol. */
@@ -20,7 +20,7 @@ interface Props {
   headings?: { depth: number; slug: string; text: string }[];
 }
 
-const { titulo, descripcion, eyebrow = 'Documentacion', seccion, activo, headings = [] } = Astro.props;
+const { titulo, descripcion, etiqueta = 'Documentación', seccion, activo, headings = [] } = Astro.props;
 
 const arbol = await construirArbolDocs();
 
@@ -28,13 +28,13 @@ const resumen = headings.filter((h) => h.depth === 2 || h.depth === 3);
 ---
 
 <BaseLayout titulo={titulo} descripcion={descripcion}>
-  <PageHeader eyebrow={eyebrow} titulo={titulo} lede={descripcion}>
+  <PageHeader etiqueta={etiqueta} titulo={titulo} lede={descripcion}>
     <slot name="acciones" />
   </PageHeader>
 
   <div class="doc">
     <div class="doc__contenedor container container--wide">
-      <aside class="doc__lateral" aria-label="Navegacion de la documentacion">
+      <aside class="doc__lateral" aria-label="Navegación de la documentación">
         <nav class="doc__arbol">
           {
             arbol.map((nodo) => (
@@ -50,7 +50,7 @@ const resumen = headings.filter((h) => h.depth === 2 || h.depth === 3);
         <slot />
       </article>
 
-      <aside class="doc__sumario" aria-label="En esta pagina">
+      <aside class="doc__sumario" aria-label="En esta página">
         {
           resumen.length > 0 && (
             <nav>
@@ -106,7 +106,7 @@ const resumen = headings.filter((h) => h.depth === 2 || h.depth === 3);
       max-height: none;
       padding: var(--space-4);
       border: var(--border-width) solid var(--border);
-      border-radius: var(--radius-lg);
+      border-radius: var(--radius-sm);
       background: var(--surface);
     }
   }
@@ -141,12 +141,9 @@ const resumen = headings.filter((h) => h.depth === 2 || h.depth === 3);
   }
 
   .doc__sumario-titulo {
-    font-family: var(--font-mono);
-    font-size: var(--text-2xs);
-    font-weight: 500;
-    letter-spacing: var(--tracking-widest);
-    text-transform: uppercase;
-    color: var(--text-subtle);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--text);
     margin-block-end: var(--space-3);
   }
 

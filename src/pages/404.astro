@@ -10,15 +10,15 @@ import { ruta } from '../lib/site';
 >
   <section class="error">
     <div class="container container--prose">
-      <p class="eyebrow">Error 404</p>
+      <p class="rotulo">Error 404</p>
       <h1 class="error__titulo">Esta página no existe</h1>
       <p class="error__texto">
-        Puede que el enlace haya cambiado o que la página se haya movido. Desde aqui
+        Puede que el enlace haya cambiado o que la página se haya movido. Desde aquí
         se vuelve a un sitio conocido.
       </p>
       <div class="error__acciones">
         <Boton href={ruta('/')}>Ir al inicio</Boton>
-        <Boton variante="secundario" href={ruta('/docs/')}>Ver la documentacion</Boton>
+        <Boton variante="secundario" href={ruta('/docs/')}>Ver la documentación</Boton>
       </div>
     </div>
   </section>
@@ -26,28 +26,25 @@ import { ruta } from '../lib/site';
 
 <style>
   .error {
-    padding-block: var(--space-11) var(--space-10);
-    text-align: center;
+    padding-block: var(--space-10) var(--space-9);
   }
 
   .error__titulo {
-    font-family: var(--font-serif);
     font-size: var(--text-4xl);
-    font-weight: 400;
-    margin-block-start: var(--space-3);
+    margin-block-start: var(--space-2);
   }
 
   .error__texto {
-    margin-block-start: var(--space-4);
+    margin-block-start: var(--space-3);
     color: var(--text-muted);
-    font-size: var(--text-lg);
+    font-size: var(--text-md);
+    max-width: 52ch;
   }
 
   .error__acciones {
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-3);
-    justify-content: center;
-    margin-block-start: var(--space-7);
+    margin-block-start: var(--space-6);
   }
 </style>

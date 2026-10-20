@@ -29,7 +29,7 @@ const otros = (await obtenerProyectos()).filter((p) => p.data.clave !== data.cla
 <BaseLayout titulo={data.nombre} descripcion={`${data.lema}. ${data.aspectos[0] ?? ''}`}>
   <div style={`--proyecto-color: ${data.color}`}>
     <PageHeader
-      eyebrow={data.rol}
+      etiqueta={data.rol}
       titulo={data.nombre}
       lede={data.lema}
       volver={{ texto: 'Todos los proyectos', href: '/proyectos/' }}
@@ -68,7 +68,7 @@ const otros = (await obtenerProyectos()).filter((p) => p.data.clave !== data.cla
               {
                 data.version && (
                   <div class="detalle">
-                    <dt>Version</dt>
+                    <dt>Versión</dt>
                     <dd>v{data.version}</dd>
                   </div>
                 )
@@ -81,7 +81,7 @@ const otros = (await obtenerProyectos()).filter((p) => p.data.clave !== data.cla
           </section>
 
           <section class="panel">
-            <h2 class="panel__titulo">Tecnologias</h2>
+            <h2 class="panel__titulo">Tecnologías</h2>
             <ul class="stack-tags">
               {data.stack.map((tecnologia) => <li>{tecnologia}</li>)}
             </ul>
@@ -90,7 +90,7 @@ const otros = (await obtenerProyectos()).filter((p) => p.data.clave !== data.cla
           {
             documentacion.length > 0 && (
               <section class="panel">
-                <h2 class="panel__titulo">Documentacion</h2>
+                <h2 class="panel__titulo">Documentación</h2>
                 <ul class="lista-docs">
                   {documentacion.map((doc) => (
                     <li>
@@ -114,8 +114,8 @@ const otros = (await obtenerProyectos()).filter((p) => p.data.clave !== data.cla
       data.aspectos.length > 0 && (
         <section class="seccion seccion--alternada">
           <div class="container">
-            <p class="eyebrow">En resumen</p>
-            <h2 class="section-heading">Lo que aporta</h2>
+            <p class="rotulo">En resumen</p>
+            <h2 class="section-heading">Aspectos principales</h2>
             <ul class="aspectos">
               {data.aspectos.map((aspecto) => (
                 <li>{aspecto}</li>
@@ -128,7 +128,7 @@ const otros = (await obtenerProyectos()).filter((p) => p.data.clave !== data.cla
 
     <section class="seccion">
       <div class="container">
-        <p class="eyebrow">Seguir explorando</p>
+        <p class="rotulo">Seguir explorando</p>
         <h2 class="section-heading">Otros proyectos</h2>
         <div class="rejilla">
           {otros.slice(0, 3).map((otro) => (
@@ -197,18 +197,15 @@ const otros = (await obtenerProyectos()).filter((p) => p.data.clave !== data.cla
 
   .panel {
     padding: var(--space-5);
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-sm);
     border: var(--border-width) solid var(--border);
     background: var(--surface);
   }
 
   .panel__titulo {
-    font-family: var(--font-mono);
-    font-size: var(--text-2xs);
-    font-weight: 500;
-    letter-spacing: var(--tracking-widest);
-    text-transform: uppercase;
-    color: var(--text-subtle);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--text);
     margin-block-end: var(--space-3);
   }
 
@@ -247,10 +244,9 @@ const otros = (await obtenerProyectos()).filter((p) => p.data.clave !== data.cla
   }
 
   .stack-tags li {
-    padding: 0.15rem 0.55rem;
+    padding: 0.1rem 0.45rem;
     border-radius: var(--radius-sm);
     border: var(--border-width) solid var(--border-subtle);
-    background: var(--surface-inset);
     font-family: var(--font-mono);
     font-size: var(--text-2xs);
     color: var(--text-muted);
@@ -300,7 +296,7 @@ const otros = (await obtenerProyectos()).filter((p) => p.data.clave !== data.cla
 
   .aspectos {
     list-style: none;
-    margin: var(--space-6) 0 0;
+    margin: var(--space-5) 0 0;
     padding: 0;
     display: grid;
     gap: var(--space-3);
@@ -309,8 +305,8 @@ const otros = (await obtenerProyectos()).filter((p) => p.data.clave !== data.cla
 
   .aspectos li {
     position: relative;
-    padding: var(--space-4) var(--space-4) var(--space-4) var(--space-6);
-    border-radius: var(--radius-md);
+    padding: var(--space-4) var(--space-4) var(--space-4) var(--space-5);
+    border-radius: var(--radius-sm);
     border: var(--border-width) solid var(--border);
     background: var(--surface);
     color: var(--text-muted);
@@ -321,10 +317,9 @@ const otros = (await obtenerProyectos()).filter((p) => p.data.clave !== data.cla
     content: '';
     position: absolute;
     left: var(--space-4);
-    top: 1.35rem;
-    width: 0.4rem;
-    height: 0.4rem;
-    border-radius: 50%;
+    top: 1.45rem;
+    width: 0.3rem;
+    height: 0.3rem;
     background: var(--proyecto-color, var(--accent));
   }
 

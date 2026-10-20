@@ -36,59 +36,41 @@
   .tema {
     display: inline-grid;
     place-items: center;
-    width: 2.25rem;
-    height: 2.25rem;
-    border-radius: var(--radius-md);
+    width: 2.125rem;
+    height: 2.125rem;
+    border-radius: var(--radius-sm);
     border: var(--border-width) solid var(--border);
     color: var(--text-muted);
-    background: var(--surface-inset);
+    background: transparent;
     transition:
       color var(--duration-fast) var(--ease-out),
-      background-color var(--duration-fast) var(--ease-out),
       border-color var(--duration-fast) var(--ease-out);
   }
 
   .tema:hover {
     color: var(--text);
-    background: var(--surface-hover);
     border-color: var(--border-strong);
   }
 
   .tema svg {
     grid-area: 1 / 1;
-    transition:
-      opacity var(--duration-base) var(--ease-out),
-      transform var(--duration-base) var(--ease-out);
+    transition: opacity var(--duration-base) var(--ease-out);
   }
 
   .tema__sol {
     opacity: 0;
-    transform: scale(0.7) rotate(-40deg);
   }
 
   .tema__luna {
     opacity: 1;
-    transform: none;
   }
 
   :global(:root[data-theme='light']) .tema__sol {
     opacity: 1;
-    transform: none;
   }
 
   :global(:root[data-theme='light']) .tema__luna {
     opacity: 0;
-    transform: scale(0.7) rotate(40deg);
-  }
-
-  @media (prefers-reduced-motion: no-preference) {
-    .tema:hover svg {
-      transform: rotate(12deg);
-    }
-
-    :global(:root[data-theme='light']) .tema:hover .tema__luna {
-      transform: rotate(12deg);
-    }
   }
 </style>
 

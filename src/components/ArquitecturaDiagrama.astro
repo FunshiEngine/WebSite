@@ -67,17 +67,14 @@
 
   .capa {
     border: var(--border-width) solid var(--border);
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-sm);
     background: var(--surface);
     padding: var(--space-5);
   }
 
   .capa--nucleo {
     border-color: var(--accent-line);
-    background:
-      linear-gradient(var(--accent-soft), transparent 60%),
-      var(--surface-raised);
-    box-shadow: var(--shadow-glow);
+    background: var(--surface-raised);
   }
 
   .capa__cabecera {
@@ -113,25 +110,17 @@
   }
 
   .nodo {
-    padding: 0.35rem 0.7rem;
-    border-radius: var(--radius-md);
+    padding: 0.3rem 0.65rem;
+    border-radius: var(--radius-sm);
     border: var(--border-width) solid var(--border);
-    background: var(--surface-inset);
+    background: transparent;
     font-size: var(--text-sm);
     color: var(--text-muted);
-    transition:
-      border-color var(--duration-base) var(--ease-out),
-      transform var(--duration-base) var(--ease-out);
   }
 
   .nodo strong {
     color: var(--text);
     font-weight: 550;
-  }
-
-  .nodo:hover {
-    transform: translateY(-2px);
-    border-color: var(--border-strong);
   }
 
   .nodo--gl {
@@ -167,37 +156,6 @@
   .conector__linea {
     width: 1px;
     height: 100%;
-    background: linear-gradient(to bottom, var(--border-strong), var(--accent-line));
-    position: relative;
-  }
-
-  @media (prefers-reduced-motion: no-preference) {
-    .conector__linea::after {
-      content: '';
-      position: absolute;
-      left: -1.5px;
-      width: 4px;
-      height: 4px;
-      border-radius: 50%;
-      background: var(--accent);
-      animation: descenso 2.6s var(--ease-out) infinite;
-    }
-
-    @keyframes descenso {
-      0% {
-        top: 0;
-        opacity: 0;
-      }
-      25% {
-        opacity: 1;
-      }
-      75% {
-        opacity: 1;
-      }
-      100% {
-        top: 100%;
-        opacity: 0;
-      }
-    }
+    background: var(--border-strong);
   }
 </style>
