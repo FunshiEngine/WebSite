@@ -14,6 +14,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
+    "verificar": "node scripts/verificar-enlaces.mjs",
+    "verificar:todo": "npm run check && npm run build && npm run verificar",
     "imagenes": "node scripts/generar-imagenes.mjs",
     "astro": "astro"
   },
