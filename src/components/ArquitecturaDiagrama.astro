@@ -1,0 +1,203 @@
+---
+/**
+ * Diagrama de la arquitectura de la organizacion.
+ *
+ * Tres capas: los frentes de uso (editores, CLI y agentes), el nucleo que
+ * define el contrato de render y los backends que lo implementan. El dibujo
+ * se hace con HTML y CSS para que sea legible en cualquier pantalla y para
+ * que el texto siga siendo texto (accesible y traducible).
+ */
+---
+
+<div class="diagrama">
+  <section class="capa" aria-labelledby="capa-frentes">
+    <header class="capa__cabecera">
+      <h3 class="capa__titulo" id="capa-frentes">Frentes de uso</h3>
+      <p class="capa__nota">Lo que la gente toca</p>
+    </header>
+    <ul class="capa__nodos">
+      <li class="nodo nodo--gl">Editor <strong>OpenGL</strong></li>
+      <li class="nodo nodo--vk">Editor <strong>Vulkan</strong></li>
+      <li class="nodo nodo--cli">CLI <strong>JSON + TUI</strong></li>
+      <li class="nodo nodo--ai">Asistente <strong>RAG</strong></li>
+      <li class="nodo nodo--silvy">Agente <strong>Silvy</strong></li>
+    </ul>
+  </section>
+
+  <div class="conector" aria-hidden="true">
+    <span class="conector__linea"></span>
+  </div>
+
+  <section class="capa capa--nucleo" aria-labelledby="capa-nucleo">
+    <header class="capa__cabecera">
+      <h3 class="capa__titulo" id="capa-nucleo">FunshiEngineCore</h3>
+      <p class="capa__nota">El contrato de render y la lógica del motor</p>
+    </header>
+    <ul class="capa__nodos capa__nodos--nucleo">
+      <li class="nodo nodo--contrato">Contrato de render</li>
+      <li class="nodo nodo--contrato">Escenas y componentes</li>
+      <li class="nodo nodo--contrato">Física · Audio · Scripts</li>
+      <li class="nodo nodo--contrato">Diagnósticos</li>
+    </ul>
+  </section>
+
+  <div class="conector" aria-hidden="true">
+    <span class="conector__linea"></span>
+  </div>
+
+  <section class="capa" aria-labelledby="capa-backends">
+    <header class="capa__cabecera">
+      <h3 class="capa__titulo" id="capa-backends">Backends de render</h3>
+      <p class="capa__nota">Implementan el contrato</p>
+    </header>
+    <ul class="capa__nodos">
+      <li class="nodo nodo--gl">OpenGL 3.3 Core</li>
+      <li class="nodo nodo--vk">Vulkan · SPIR-V</li>
+    </ul>
+  </section>
+</div>
+
+<style>
+  .diagrama {
+    display: grid;
+    gap: var(--space-2);
+    max-width: 54rem;
+    margin-inline: auto;
+  }
+
+  .capa {
+    border: var(--border-width) solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    padding: var(--space-5);
+  }
+
+  .capa--nucleo {
+    border-color: var(--accent-line);
+    background:
+      linear-gradient(var(--accent-soft), transparent 60%),
+      var(--surface-raised);
+    box-shadow: var(--shadow-glow);
+  }
+
+  .capa__cabecera {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-2);
+    margin-block-end: var(--space-4);
+  }
+
+  .capa__titulo {
+    font-size: var(--text-md);
+    letter-spacing: var(--tracking-tight);
+  }
+
+  .capa--nucleo .capa__titulo {
+    color: var(--accent);
+  }
+
+  .capa__nota {
+    font-size: var(--text-sm);
+    color: var(--text-subtle);
+  }
+
+  .capa__nodos {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .nodo {
+    padding: 0.35rem 0.7rem;
+    border-radius: var(--radius-md);
+    border: var(--border-width) solid var(--border);
+    background: var(--surface-inset);
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+    transition:
+      border-color var(--duration-base) var(--ease-out),
+      transform var(--duration-base) var(--ease-out);
+  }
+
+  .nodo strong {
+    color: var(--text);
+    font-weight: 550;
+  }
+
+  .nodo:hover {
+    transform: translateY(-2px);
+    border-color: var(--border-strong);
+  }
+
+  .nodo--gl {
+    border-left: 2px solid #e29a3c;
+  }
+
+  .nodo--vk {
+    border-left: 2px solid #c96f9b;
+  }
+
+  .nodo--cli {
+    border-left: 2px solid #6fbf9b;
+  }
+
+  .nodo--ai {
+    border-left: 2px solid #a58ce0;
+  }
+
+  .nodo--silvy {
+    border-left: 2px solid #e0736f;
+  }
+
+  .nodo--contrato {
+    border-left: 2px solid var(--accent);
+  }
+
+  .conector {
+    display: grid;
+    place-items: center;
+    height: var(--space-6);
+  }
+
+  .conector__linea {
+    width: 1px;
+    height: 100%;
+    background: linear-gradient(to bottom, var(--border-strong), var(--accent-line));
+    position: relative;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .conector__linea::after {
+      content: '';
+      position: absolute;
+      left: -1.5px;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: descenso 2.6s var(--ease-out) infinite;
+    }
+
+    @keyframes descenso {
+      0% {
+        top: 0;
+        opacity: 0;
+      }
+      25% {
+        opacity: 1;
+      }
+      75% {
+        opacity: 1;
+      }
+      100% {
+        top: 100%;
+        opacity: 0;
+      }
+    }
+  }
+</style>

@@ -1,0 +1,107 @@
+---
+titulo: Estilo de código
+descripcion: "Convenciones de escritura compartidas por todos los repositorios de la organización: idioma, formato, errores, contratos y pruebas."
+seccion: Guía
+orden: 3
+destacado: true
+---
+
+Las convenciones son practicas y compartidas: cada repositorio las repite en su
+`AGENTS.md` porque cualquiera puede trabajar en cualquiera de ellos.
+
+## Idioma
+
+- **C++17, Kotlin y JSON** son los lenguajes del proyecto.
+- Los **identificadores, comentarios y logs** se escriben en español:
+  `ejecutarSolicitud`, `resolverCasa`, `armarPeticionLlm`.
+- Los **tipos** van en PascalCase, los **métodos** en camelCase y los
+  **espacios de nombres** en minúsculas.
+- Los términos técnicos sin traducción natural se quedan en inglés: `buffer`,
+  `handle`, `backend`, `shader`, `commit`.
+
+## Formato
+
+- **4 espacios**, llaves en la línea siguiente para clases y funciones.
+- **UTF-8 sin BOM** y fin de línea **LF**.
+- Los archivos de C++ llevan la cabecera de Apache 2.0, o al menos la línea
+  `SPDX-License-Identifier: Apache-2.0`.
+- Las fuentes de cada `target` se listan **a mano**: no hay globs. Un `.cpp`
+  nuevo se agrega al `CMakeLists.txt` en el mismo commit que lo introduce.
+
+## Enums y funciones exhaustivas
+
+Todo conjunto cerrado de valores —comandos, modos, códigos de error, motivos de
+finalización— se modela con `enum class` y se consume con un `switch` exhaustivo
+que lanza o registra un caso por defecto. **El compilador es el primer linter**:
+agregar un valor sin cubrirlo es un error de compilación, no un fallo en
+producción.
+
+## Errores
+
+- Los errores se capturan **una sola vez, en el borde**. Ni el núcleo ni los
+  módulos internos escriben en `stdout` ni registran por su cuenta.
+- Un error crudo se envuelve con un clasificador y viaja **normalizado**: la
+  respuesta al cliente es exactamente el objeto que quedó guardado.
+- Los errores del **proveedor externo** llegan tipados y se distinguen los
+  reintentables de los que no. Solo los reintentables repiten la petición, con
+  backoff exponencial.
+- **Timeout y cancelación son cosas distintas**, y el código las distingue.
+
+## Configuración
+
+- La configuración se **valida al arrancar** y en cada paso.
+- Si algo falta o es inválido, el error **lista todos los problemas juntos**, no
+  solo el primero.
+- Hay valores por defecto razonables y se **toleran los campos desconocidos**
+  al leer.
+
+## Inyección de dependencias
+
+El núcleo recibe sus colaboradores por constructor. Eso permite que las pruebas
+inyecten dobles —un gateway de LLM falso, un servidor HTTP falso, una carpeta
+temporal— sin tocar la red ni el disco real.
+
+## Pruebas
+
+- Las pruebas son **deterministas**: sin red, sin modelo, sin reloj del sistema.
+- Cada defecto se cierra con una prueba que **falla antes** de la corrección y
+  pasa después. El rojo→verde se demuestra, no se supone.
+- Las suites que dependen de una GPU, de una terminal o de un proceso externo
+  **se saltan** (código de salida 77) cuando el entorno no da; nunca fingen
+  que pasaron.
+- Los criterios de aceptación son observables: se invoca el binario con una
+  solicitud real y se comparan **respuesta y código de salida**.
+
+## Documentación
+
+- La documentación es un **documento vivo**: se actualiza en el mismo commit
+  que el cambio que la motiva.
+- El `README` y el `AGENTS.md` se mantienen al día cuando el cambio los afecta.
+- Los comentarios del código describen **piezas, comportamiento, contratos y
+  causas técnicas**. Nada de identificadores de tareas, planes, fases ni
+  estados: ese contexto vive en los documentos de gestión y en los mensajes de
+  commit.
+
+## Git
+
+- Commits **atómicos y convencionales**: `feat:`, `fix:`, `docs:`,
+  `refactor:`, `chore:`.
+- El mensaje describe **solo la implementación**. Sin atribuciones ajenas al
+  cambio y sin trailers `Co-authored-by`.
+- Se agregan **solo los archivos propios** de la tarea, con `git add <ruta>`
+  explícito: nunca `git add -A` ni `git add .`.
+- Los comandos destructivos (`checkout`, `reset`, `restore`, `clean`) **piden
+  permiso** y se justifican antes de ejecutarse.
+- Ningún cambio se da por **resuelto** hasta que el usuario lo ha probado y
+  confirmado.
+
+## La regla del núcleo agnóstico
+
+La regla que más se repite en la organización, porque es la que sostiene el
+diseño de tres repositorios:
+
+> El núcleo no toca `stdout` ni `argv`. Devuelve un resultado y quien lo llama
+> decide cómo mostrarlo.
+
+Es lo que permite que la misma lógica la usen la terminal, una futura app de
+escritorio y las pruebas.

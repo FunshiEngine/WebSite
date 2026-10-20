@@ -1,0 +1,132 @@
+---
+titulo: Silvy
+descripcion: "El agente de IA de código del motor: una capa LLM local o remota, expuesta como binario JSON por stdin y stdout."
+seccion: Proyectos
+proyecto: silvy
+orden: 6
+---
+
+`Silvy` es el **agente de inteligencia artificial de código** del motor gráfico.
+Es el “cerebro” del agente: una capa LLM —local con `llama-server` y un modelo
+GGUF, o remota vía una API compatible con OpenAI— expuesta como binario que se
+consume por **JSON sobre stdin/stdout** desde la
+[CLI](/docs/proyectos/funshiengine-cli/).
+
+El bucle del agente —planificar, ejecutar herramientas, observar el resultado,
+iterar— vive en la CLI. Silvy solo habla con el LLM y responde.
+
+## Lo que no es
+
+- No es un chatbot: ese es [FunshiEngineAI](/docs/proyectos/funshiengine-ai/).
+- No es una app de escritorio: **Silvy no tiene interfaz propia**.
+- No trae conocimiento propio: el RAG, las *skills* y el prompt de sistema los
+  aporta el usuario desde la CLI.
+
+## El protocolo
+
+Una solicitud, un paso:
+
+```jsonc
+// la CLI pide el siguiente turno del agente
+{ "command": "agent.step", "messages": [ /* ... */ ], "tools": [ /* ... */ ] }
+```
+
+```jsonc
+{ "apiVersion": 1, "ok": true, "result": { "content": "…", "toolCalls": [ /* ... */ ] } }
+```
+
+Es **sin estado**: cada paso lleva el historial completo. Silvy no guarda
+conversaciones entre solicitudes.
+
+## Los comandos
+
+| Comando | Qué hace |
+|---|---|
+| `agent.step` | Un paso del agente: historial completo, catálogo de herramientas, prompt de sistema opcional y `maxIterations` como referencia para la CLI. |
+| `errores.list` | Los últimos errores persistidos; `args` admite `limite` y `codigo`. |
+| `errores.get` | El detalle de un error por id (`args.id`). Un id inexistente responde `encontrado:false`, no es un fallo. |
+| `llm.status` | Estado del LLM local: modo, modelo, servidor vivo y puerto, bytes descargados, porcentaje de carga y último error. |
+| `llm.download` | Inicia o reanuda la descarga del GGUF en segundo plano. |
+| `llm.cancel` | Cancela la descarga en curso; el `.part` se conserva. |
+| `llm.mode` | Cambia `LOCAL` ↔ `REMOTE` y detiene el servidor local al pasar a remoto. |
+
+## La casa de Silvy
+
+Los datos de runtime viven en `silvy-home/`, junto al binario. La precedencia
+es `--home` > `SILVY_HOME` > junto al binario. El prompt de sistema se resuelve
+en este orden: el `systemPrompt` de la solicitud, `<casa>/system_prompt.md` y
+`config/system_prompt.md` junto al binario.
+
+Las excepciones se registran en `<casa>/errores/errores.jsonl`, en modo
+*append-only*, con rotación por tamaño y retención. **Toda respuesta
+`ok:false` devuelve exactamente el objeto que quedó guardado.**
+
+## El modo local
+
+En modo `LOCAL`, Silvy descarga el GGUF a su casa —de forma reanudable, con
+bloqueo y verificación de integridad— y levanta `llama-server` como proceso
+hijo, con *health-check*, apagado escalonado y el log en
+`<casa>/logs/llama-server.log`.
+
+Silvy **no compila `llama.cpp`**: el ejecutable lo aporta el usuario, por
+`llamaServerPath` o por el `PATH`.
+
+El runtime local **sobrevive entre solicitudes**: por eso `main` atiende varias
+seguidas desde stdin, mientras que con `--request-file` atiende una sola.
+
+## El modo remoto
+
+En modo `REMOTE` habla por HTTP y SSE contra una API compatible con OpenAI,
+con *tool calling* real. La configuración se valida al arrancar y en cada paso.
+
+Los errores del proveedor llegan tipados y se distinguen los reintentables de
+los que no:
+
+| Código | Causa |
+|---|---|
+| `CLAVE_INVALIDA` | 401 o 403 |
+| `SIN_CUOTA` | 429 |
+| `MODELO_NO_DISPONIBLE` | 404 o destino remoto inalcanzable |
+| `CONTEXTO_AGOTADO` | 400 por contexto |
+| `SERVIDOR_CAIDO` | 5xx o fallo de red en local |
+| `TIMEOUT` | Se agotó el presupuesto del paso |
+| `CANCELADO` | Lo pidió el humano |
+
+Solo los reintentables repiten la petición, con backoff exponencial.
+
+## Configuración
+
+El archivo opcional `<casa>/config.json` describe con qué LLM habla Silvy:
+
+```jsonc
+{
+  "mode": "REMOTE",                          // LOCAL | REMOTE
+  "baseUrl": "https://api.openai.com/v1",
+  "apiKey": "sk-...",
+  "modelName": "phi-4-mini-instruct",
+  "temperature": 0.2,
+  "timeoutMs": 180000,
+  "hfRepo": "unsloth/Phi-4-mini-instruct-GGUF",
+  "llamaServerPath": "llama-server",
+  "contextSize": 8192,
+  "gpuLayers": 0,
+  "serverPort": 8081
+}
+```
+
+El `config` de la solicitud pisa los campos presentes; los campos desconocidos
+se ignoran.
+
+## Compilación
+
+```bash
+export PATH=/mingw64/bin:$PATH
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build -j$(nproc)
+cd build && ctest --output-on-failure
+```
+
+## Repositorio
+
+[github.com/FunshiEngine/Silvy](https://github.com/FunshiEngine/Silvy) ·
+Licencia Apache 2.0.

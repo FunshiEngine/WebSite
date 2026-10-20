@@ -1,0 +1,106 @@
+---
+titulo: FunshiEngineGL
+descripcion: "El motor y el editor de juegos en tiempo real resueltos sobre OpenGL 3.3 Core: interfaz completa, físicas, scripts, mods y exportación."
+seccion: Proyectos
+proyecto: funshiengine-opengl
+orden: 2
+destacado: true
+---
+
+`FunshiEngineGL` es el **motor y editor de juegos en tiempo real** de la
+organización: un ejecutable de C++17 que combina ventana y contexto OpenGL
+3.3 *core* vía GLFW, una interfaz de editor con Dear ImGui e ImGuizmo, simulación
+física con Bullet, carga de modelos con Assimp y scripts dinámicos con recarga
+en caliente.
+
+Es la implementación de referencia del contrato de render: el mismo motor que el
+[núcleo](/docs/proyectos/funshiengine-core/) define, resuelto aquí sobre OpenGL.
+
+## El editor
+
+- **Dock principal** con ventanas anclables: jerarquía de objetos, inspector por
+  componente, explorador de archivos, terminal integrada y visor de vistas
+  previas.
+- **Inspector por componente**: cada componente expone su panel de ajustes
+  (`Settings*`), y lo que se ajusta con deslizadores también se puede escribir
+  desde un script.
+- **Gizmos** con ImGuizmo: mover, rotar y escalar con historial de comandos, con
+  congelación de hijos durante el arrastre.
+- **Consola integrada**: ConPTY en Windows, pseudo-terminal en POSIX, con un
+  emulador de terminal VT propio.
+- **Explorador de archivos** con vigilancia de cambios externos (inotify en
+  Linux, *polling* por fecha de modificación en el resto).
+
+## Escenas y objetos
+
+- Jerarquía de entidades con árboles enlazados propios: `GameObject` con
+  `Transform` y componentes.
+- Componentes: `Transform`, `Material`, `Light`, `Color`, `Model`, `SpriteRenderer`,
+  `Tilemap`, `Skybox`, `Grid`, `AudioSource`, `InterfaceComponent`, `RigidBody`
+  y cuatro tipos de colisionador.
+- **Prefabs** en formato `.prefab`, con biblioteca, caché y clonado profundo.
+- **Serialización binaria** en preorden, con la jerarquía completa, más un
+  manifiesto de assets en JSON que tiene precedencia sobre el binario.
+
+## Render
+
+- **Un único pipeline moderno.** Los modelos se dibujan con `MeshRenderer`
+  (VBO/VAO más shaders) y las líneas con un batch en GPU. No queda modo inmediato
+  ni materiales ni luces de estado fijo.
+- **Sombras**: mapa de profundidad por luz proyectora, con consulta PCF y
+  parâmetros de resolución, sesbio, fuerza, radio y distancia.
+- **Cielo**: degradado o cubemap de seis caras; **horizonte común** para la
+  grilla, la guía de ejes y los gizmos.
+- **Sistema de shaders** con gestor de programas y preprocesador propio que
+  resuelve `#include` en CPU, porque GL 3.3 no trae esa extensión.
+
+## Scripts
+
+Contrato común `IScriptBehaviour` con dos backends:
+
+| Backend | Cómo funciona |
+|---|---|
+| C++ | Compila el `.cpp` a `.so`/`.dll` y lo carga con `dlopen` |
+| Java | Monta la JVM por JNI con `libjvm` y `javac` de la misma raíz de JDK |
+
+Los dos traen reflexión tipo `SerializeField`, recarga en caliente y manejo de
+errores en el límite de ejecución: el primer fallo se conserva y se publica
+como `SCRIPT_CALLBACK_FAILED`.
+
+## Mods
+
+Paquetes `.fmod` con manifiesto versionado, orden topológico de carga,
+detección de ciclos y una API pública (`ApiMod`) **solo crece**: el primer
+elemento de la tabla de servicios es la versión, para que su desplazamiento no
+se mueva nunca.
+
+## Exportar un juego
+
+El exportador genera un proyecto CMake temporal, compila el runtime —sin código
+de editor— y empaqueta el ejecutable junto con escenas, scripts y assets en una
+estructura simplificada. El punto de entrada del juego es
+`src/Runtime/main_juego.cpp`, sin `GUIManager`, sin `MenuGUI` y sin paneles.
+
+## Compilación y ejecución
+
+```bash
+cmake -S FunshiEngineGL -B FunshiEngineGL/build \
+    -DCMAKE_BUILD_TYPE=Release -DENABLE_ASAN=OFF -DFUNSHI_JAVA=ON
+cmake --build FunshiEngineGL/build -j$(nproc)
+cd FunshiEngineGL && ./build/FunshiEngineGL
+```
+
+Las pruebas *headless* viven en `tests/` y se ejecutan con `ctest`:
+
+```bash
+ctest --test-dir FunshiEngineGL/build --output-on-failure
+```
+
+La CI compila el motor en Ubuntu y en Windows con MSVC, y compila **todas** las
+suites registradas en cada modo: un test sin ejecutable se marca como *not
+run* y hace fallar el job.
+
+## Repositorio
+
+[github.com/FunshiEngine/FunshiEngineOpenGL](https://github.com/FunshiEngine/FunshiEngineOpenGL) ·
+Licencia Apache 2.0.

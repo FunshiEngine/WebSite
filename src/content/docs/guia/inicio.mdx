@@ -1,0 +1,151 @@
+---
+titulo: Primeros pasos
+descripcion: Requisitos, compilación y ejecución de cada proyecto de la organización, con los comandos que funcionan.
+seccion: Guía
+orden: 2
+destacado: true
+---
+
+Todos los proyectos de la organización se compilan de forma reproducible y
+publican sus pasos exactos en su propio `README`. Esta página es el mapa: qué
+necesitas instalar y qué comando lanza cada cosa.
+
+## Requisitos comunes
+
+| Herramienta | Para qué | Versión |
+|---|---|---|
+| CMake | Compilar los proyectos de C++ | 3.15 o superior |
+| Compilador C++17 | Motor, CLI, Silvy | GCC, Clang o MSVC |
+| Git | Submódulos y flujo de trabajo | cualquiera |
+| JDK 21 | El asistente de escritorio (Gradle) | 21 |
+| Node.js 22 | El sitio de la organización | 22.22 o superior |
+
+En Windows, el toolchain recomendado es **MSYS2 con `mingw64`**: la mayoría de
+los repositorios de la organización se validan en ese entorno, y el `PATH` se
+prepara así:
+
+```bash
+export PATH=/mingw64/bin:$PATH
+```
+
+## El motor: OpenGL
+
+El editor y el motor resueltos sobre OpenGL 3.3 Core. Es la implementación de
+referencia y el punto de partida habitual.
+
+```bash
+cmake -S FunshiEngineGL -B FunshiEngineGL/build \
+    -DCMAKE_BUILD_TYPE=Release -DENABLE_ASAN=OFF -DFUNSHI_JAVA=ON
+cmake --build FunshiEngineGL/build -j$(nproc)
+cd FunshiEngineGL && ./build/FunshiEngineGL
+```
+
+Los tests *headless* se ejecutan con `ctest`:
+
+```bash
+ctest --test-dir FunshiEngineGL/build --output-on-failure
+```
+
+> **Nota**
+>
+> En `Debug` (el tipo de build por defecto) los sanitizers quedan activados, y el
+> GCC de MSYS2 no enlaza con ellos. Compila en `Release` con `-DENABLE_ASAN=OFF`.
+
+## El backend de Vulkan
+
+El mismo motor resuelto sobre Vulkan. Los shaders se compilan a SPIR-V **en
+tiempo de build**, así que hace falta un compilador de shaders a SPIR-V
+(`glslc` del Vulkan SDK o `glslangValidator`).
+
+```bash
+cmake -S FunshiEngineGL -B FunshiEngineGL/build \
+    -DCMAKE_BUILD_TYPE=Release -DENABLE_ASAN=OFF -DFUNSHI_JAVA=ON
+cmake --build FunshiEngineGL/build -j$(nproc)
+cd FunshiEngineGL && ./build/FunshiEngineVK
+```
+
+Si el equipo tiene varias GPU o un driver problemático, se puede forzar una
+concreta:
+
+```bash
+FUNSHI_VULKAN_GPU=1 ./build/FunshiEngineVK
+```
+
+El backend se puede dejar de compilar con `-DFUNSHI_VULKAN=OFF`; el motor
+arranca entonces sin dibujar.
+
+## La terminal
+
+La CLI consume el motor como **submódulo**, así que hay que inicializarlo antes
+de compilar:
+
+```bash
+git submodule update --init --recursive
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build -j$(nproc)
+```
+
+Después, tres formas de usarla:
+
+```bash
+FunshiCLI help
+FunshiCLI version
+FunshiCLI --tui                                   # interfaz de terminal
+FunshiCLI --request < solicitud.json             # una solicitud por stdin
+FunshiCLI --request-file solicitud.json          # una solicitud de un archivo
+```
+
+### Un ejemplo completo
+
+```bash
+echo '{"command":"project.create","args":{"name":"MiJuego2D","dimension":2}}' \
+  | FunshiCLI --request
+```
+
+```json
+{"apiVersion":1,"error":null,"ok":true,"result":{"dimension":2,"name":"MiJuego2D","path":"..."}}
+```
+
+El catálogo completo de comandos está en la
+[documentación de la CLI](/docs/proyectos/funshiengine-cli/comandos/).
+
+## El asistente de escritorio
+
+```bash
+./gradlew :frontend:run
+```
+
+En desarrollo, la configuración, los modelos y los documentos internos viven en
+`app-home/`, en la raíz del repositorio. La primera ejecución descarga el
+modelo local (unos 2,4 GB) y solo después queda operativo.
+
+## El agente
+
+`Silvy` es un binario autónomo que habla JSON por stdin/stdout:
+
+```bash
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build -j$(nproc)
+build/Silvy --request-file solicitud.json
+```
+
+La primera configuración necesita red: las dependencias (`nlohmann/json` y
+`cpp-httplib`) llegan por `FetchContent` con etiqueta fija.
+
+## El sitio de la organización
+
+Este sitio es un proyecto [Astro](https://astro.build) estático:
+
+```bash
+npm install
+npm run dev       # servidor de desarrollo
+npm run check     # verificación de tipos
+npm run build     # sitio generado en dist/
+npm run preview   # sirve lo generado
+```
+
+## Qué leer después
+
+- [Arquitectura de la organización](/docs/arquitectura/) — cómo encajan las piezas.
+- [Estilo de código](/docs/guia/estilo-de-codigo/) — las convenciones de escritura.
+- [Documentación de los proyectos](/docs/proyectos/) — el detalle de cada repositorio.

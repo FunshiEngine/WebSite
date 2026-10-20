@@ -1,0 +1,262 @@
+---
+import Logo from './Logo.astro';
+import ThemeToggle from './ThemeToggle.astro';
+import { SITE, ruta } from '../lib/site';
+
+const rutaActual = Astro.url.pathname.replace(SITE.base, '').replace(/\/$/, '') || '/';
+
+const enlaces = [
+  { href: '/', texto: 'Inicio' },
+  { href: '/proyectos/', texto: 'Proyectos' },
+  { href: '/docs/', texto: 'Documentación' },
+  { href: '/acerca-de/', texto: 'Acerca de' },
+];
+
+/**
+ * Marca una entrada como activa si la ruta actual esta dentro de su
+ * seccion. La raiz solo esta activa en la pagina de inicio.
+ */
+function esActivo(href: string): boolean {
+  if (href === '/') return rutaActual === '/';
+  return rutaActual === href || rutaActual.startsWith(`${href}/`);
+}
+---
+
+<header class="cabecera">
+  <div class="cabecera__interior container container--wide">
+    <a class="cabecera__marca" href={ruta('/')} aria-label="FunshiEngine, ir al inicio">
+      <Logo />
+    </a>
+
+    <nav class="cabecera__nav" aria-label="Navegacion principal">
+      <ul class="cabecera__lista">
+        {
+          enlaces.map((enlace) => (
+            <li>
+              <a
+                href={ruta(enlace.href)}
+                class="cabecera__enlace"
+                aria-current={esActivo(enlace.href) ? 'page' : undefined}
+              >
+                {enlace.texto}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="cabecera__acciones">
+      <ThemeToggle />
+      <a
+        class="cabecera__github"
+        href={SITE.repositorio}
+        target="_blank"
+        rel="noreferrer noopener"
+        aria-label="Organizacion FunshiEngine en GitHub"
+        title="GitHub"
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path
+            d="M12 .8a11.2 11.2 0 0 0-3.54 21.82c.56.1.77-.24.77-.54v-2.1c-3.12.68-3.78-1.34-3.78-1.34-.51-1.3-1.25-1.65-1.25-1.65-1.02-.7.08-.68.08-.68 1.13.08 1.72 1.16 1.72 1.16 1 1.72 2.62 1.22 3.26.94.1-.73.39-1.22.71-1.5-2.49-.28-5.11-1.25-5.11-5.56 0-1.23.44-2.23 1.16-3.02-.12-.28-.5-1.43.11-2.98 0 0 .95-.3 3.1 1.15a10.7 10.7 0 0 1 5.64 0c2.15-1.46 3.1-1.15 3.1-1.15.61 1.55.23 2.7.11 2.98.72.79 1.16 1.79 1.16 3.02 0 4.32-2.63 5.27-5.13 5.55.4.35.76 1.04.76 2.1v3.11c0 .3.2.65.78.54A11.2 11.2 0 0 0 12 .8Z"
+          ></path>
+        </svg>
+      </a>
+      <button
+        type="button"
+        class="cabecera__menu"
+        data-menu-boton
+        aria-expanded="false"
+        aria-controls="menu-movil"
+        aria-label="Abrir el menu"
+      >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path
+            d="M3.5 7h17M3.5 12h17M3.5 17h17"
+            stroke="currentColor"
+            stroke-width="1.7"
+            stroke-linecap="round"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="cabecera__movil" id="menu-movil" data-menu-panel hidden>
+    <nav aria-label="Navegacion principal movil">
+      <ul>
+        {
+          enlaces.map((enlace) => (
+            <li>
+              <a
+                href={ruta(enlace.href)}
+                class="cabecera__enlace"
+                aria-current={esActivo(enlace.href) ? 'page' : undefined}
+              >
+                {enlace.texto}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .cabecera {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--page-veil);
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    border-block-end: var(--border-width) solid var(--border-subtle);
+  }
+
+  .cabecera__interior {
+    display: flex;
+    align-items: center;
+    gap: var(--space-5);
+    height: var(--header-height);
+  }
+
+  .cabecera__marca {
+    flex: none;
+    border-radius: var(--radius-sm);
+  }
+
+  .cabecera__nav {
+    flex: 1;
+    display: none;
+  }
+
+  .cabecera__lista {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .cabecera__enlace {
+    position: relative;
+    display: block;
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-sm);
+    font-size: var(--text-base);
+    color: var(--text-muted);
+    transition:
+      color var(--duration-fast) var(--ease-out),
+      background-color var(--duration-fast) var(--ease-out);
+  }
+
+  .cabecera__enlace:hover {
+    color: var(--text);
+    background: var(--surface-hover);
+  }
+
+  .cabecera__enlace[aria-current='page'] {
+    color: var(--text);
+  }
+
+  .cabecera__enlace[aria-current='page']::after {
+    content: '';
+    position: absolute;
+    left: var(--space-3);
+    right: var(--space-3);
+    bottom: 0.15rem;
+    height: 1.5px;
+    border-radius: 2px;
+    background: var(--accent);
+  }
+
+  .cabecera__acciones {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-inline-start: auto;
+  }
+
+  .cabecera__github {
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: var(--radius-md);
+    border: var(--border-width) solid var(--border);
+    color: var(--text-muted);
+    background: var(--surface-inset);
+    transition:
+      color var(--duration-fast) var(--ease-out),
+      background-color var(--duration-fast) var(--ease-out),
+      border-color var(--duration-fast) var(--ease-out);
+  }
+
+  .cabecera__github:hover {
+    color: var(--text);
+    background: var(--surface-hover);
+    border-color: var(--border-strong);
+  }
+
+  .cabecera__menu {
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: var(--radius-md);
+    border: var(--border-width) solid var(--border);
+    color: var(--text-muted);
+    background: var(--surface-inset);
+  }
+
+  .cabecera__movil {
+    border-block-start: var(--border-width) solid var(--border-subtle);
+    padding: var(--space-3) var(--space-5) var(--space-5);
+  }
+
+  .cabecera__movil ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-1);
+  }
+
+  .cabecera__movil .cabecera__enlace {
+    padding: var(--space-3);
+  }
+
+  @media (min-width: 52rem) {
+    .cabecera__nav {
+      display: block;
+    }
+
+    .cabecera__menu,
+    .cabecera__movil {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  const boton = document.querySelector<HTMLButtonElement>('[data-menu-boton]');
+  const panel = document.querySelector<HTMLElement>('[data-menu-panel]');
+
+  boton?.addEventListener('click', () => {
+    if (!panel) return;
+    const abierto = boton.getAttribute('aria-expanded') === 'true';
+    boton.setAttribute('aria-expanded', String(!abierto));
+    boton.setAttribute('aria-label', abierto ? 'Abrir el menu' : 'Cerrar el menu');
+    panel.hidden = abierto;
+  });
+
+  // Al cambiar el tamano de la ventana, el menu movil se cierra solo.
+  const coincidence = window.matchMedia('(min-width: 52rem)');
+  coincidence.addEventListener('change', (evento) => {
+    if (evento.matches && panel) {
+      panel.hidden = true;
+      boton?.setAttribute('aria-expanded', 'false');
+    }
+  });
+</script>

@@ -1,0 +1,98 @@
+---
+/**
+ * Fondo decorativo del encabezado principal.
+ *
+ * Es puramente CSS (sin lienzo ni JavaScript): una retícula fina, dos
+ * resplandores y una barra de luz que barre lentamente el area. Todo el
+ * movimiento se desactiva con `prefers-reduced-motion`.
+ */
+---
+
+<div class="fondo" aria-hidden="true">
+  <div class="fondo__rejilla"></div>
+  <div class="fondo__brillo fondo__brillo--a"></div>
+  <div class="fondo__brillo fondo__brillo--b"></div>
+  <div class="fondo__barrido"></div>
+</div>
+
+<style>
+  .fondo {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .fondo__rejilla {
+    position: absolute;
+    inset: -1px;
+    background-image:
+      linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(120% 90% at 50% 0%, #000 20%, transparent 78%);
+    -webkit-mask-image: radial-gradient(120% 90% at 50% 0%, #000 20%, transparent 78%);
+  }
+
+  .fondo__brillo {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(90px);
+  }
+
+  .fondo__brillo--a {
+    width: 44rem;
+    height: 44rem;
+    top: -22rem;
+    left: -10rem;
+    background: radial-gradient(circle, var(--hero-glow-a), transparent 68%);
+  }
+
+  .fondo__brillo--b {
+    width: 36rem;
+    height: 36rem;
+    top: -14rem;
+    right: -12rem;
+    background: radial-gradient(circle, var(--hero-glow-b), transparent 68%);
+  }
+
+  .fondo__barrido {
+    position: absolute;
+    inset-inline: 0;
+    top: 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      var(--accent-line) 35%,
+      var(--accent) 50%,
+      var(--accent-line) 65%,
+      transparent
+    );
+    opacity: 0.5;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .fondo__barrido {
+      animation: barrido 9s var(--ease-out) infinite;
+    }
+
+    @keyframes barrido {
+      0% {
+        transform: translateY(0);
+        opacity: 0;
+      }
+      12% {
+        opacity: 0.55;
+      }
+      88% {
+        opacity: 0.55;
+      }
+      100% {
+        transform: translateY(26rem);
+        opacity: 0;
+      }
+    }
+  }
+</style>

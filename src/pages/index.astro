@@ -1,0 +1,496 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import HeroFondo from '../components/HeroFondo.astro';
+import ArquitecturaDiagrama from '../components/ArquitecturaDiagrama.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import Boton from '../components/Boton.astro';
+import { obtenerProyectos } from '../lib/proyectos';
+import { obtenerDocs } from '../lib/docs';
+import { SITE, ruta } from '../lib/site';
+
+const proyectos = await obtenerProyectos();
+const docs = await obtenerDocs();
+const destacados = docs.filter((d) => d.data.destacado).slice(0, 3);
+
+const pilares = [
+  {
+    titulo: 'Contratos, no atajos',
+    texto:
+      'El motor no habla el dialecto de ninguna API gráfica. Define qué necesita y deja que un backend lo resuelva.',
+  },
+  {
+    titulo: 'El núcleo no toca la pantalla',
+    texto:
+      'La lógica de negocio vive en un núcleo agnóstico del transporte: la terminal, la interfaz o el agente la consumen igual.',
+  },
+  {
+    titulo: 'Herramientas que no inventan',
+    texto:
+      'La documentación es la fuente de verdad y cada afirmación se puede comprobar contra ella, de forma determinista.',
+  },
+];
+
+const cifras = [
+  { valor: String(proyectos.length), texto: 'repositorios' },
+  { valor: String(docs.length), texto: 'páginas de documentación' },
+  { valor: '2', texto: 'backends de render' },
+  { valor: 'Apache 2.0', texto: 'de licencia' },
+];
+---
+
+<BaseLayout
+  titulo="Motor y editor de juegos en tiempo real"
+  descripcion={SITE.descripcion}
+>
+  <!-- Encabezado principal -->
+  <section class="hero">
+    <HeroFondo />
+    <div class="hero__interior container">
+      <p class="eyebrow reveal">Organizacion FunshiEngine</p>
+
+      <h1 class="hero__titulo reveal">
+        Un motor de juegos, <em>su contrato</em> y las herramientas que lo hacen manejable.
+      </h1>
+
+      <p class="hero__entradilla reveal">
+        {SITE.descripcion}
+      </p>
+
+      <div class="hero__acciones reveal">
+        <Boton href={ruta('/proyectos/')}>
+          Explorar los proyectos
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path
+              d="M5 12h13m0 0-5.5-5.5M18 12l-5.5 5.5"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"></path>
+          </svg>
+        </Boton>
+        <Boton variante="secundario" href={ruta('/docs/')}>Leer la documentacion</Boton>
+      </div>
+
+      <dl class="hero__cifras reveal">
+        {
+          cifras.map((cifra) => (
+            <div class="cifra">
+              <dt class="cifra__valor">{cifra.valor}</dt>
+              <dd class="cifra__texto">{cifra.texto}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </section>
+
+  <!-- Pilares -->
+  <section class="seccion" aria-labelledby="titulo-pilares">
+    <div class="container">
+      <p class="eyebrow">Como trabajamos</p>
+      <h2 class="section-heading" id="titulo-pilares">Tres decisiones que sostienen todo</h2>
+
+      <ul class="pilares">
+        {
+          pilares.map((pilar, indice) => (
+            <li class="pilar">
+              <span class="pilar__indice" aria-hidden="true">
+                {String(indice + 1).padStart(2, '0')}
+              </span>
+              <h3 class="pilar__titulo">{pilar.titulo}</h3>
+              <p class="pilar__texto">{pilar.texto}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- Proyectos -->
+  <section class="seccion seccion--alternada" aria-labelledby="titulo-proyectos">
+    <div class="container">
+      <div class="seccion__cabecera">
+        <div>
+          <p class="eyebrow">Proyectos</p>
+          <h2 class="section-heading" id="titulo-proyectos">Cada pieza, por separado</h2>
+          <p class="section-lede">
+            Un repositorio por responsabilidad. Se pueden leer, compilar y usar por
+            separado, y el conjunto es mas util que la suma de las partes.
+          </p>
+        </div>
+        <a class="enlace-flecha" href={ruta('/proyectos/')}>
+          Ver todos
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path
+              d="M5 12h13m0 0-5.5-5.5M18 12l-5.5 5.5"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"></path>
+          </svg>
+        </a>
+      </div>
+
+      <div class="rejilla-proyectos">
+        {proyectos.map((proyecto) => <ProjectCard proyecto={proyecto} detallado />)}
+      </div>
+    </div>
+  </section>
+
+  <!-- Arquitectura -->
+  <section class="seccion" aria-labelledby="titulo-arquitectura">
+    <div class="container">
+      <p class="eyebrow">Arquitectura</p>
+      <h2 class="section-heading" id="titulo-arquitectura">Como encaja todo</h2>
+      <p class="section-lede">
+        El contrato de render es el cuello de botella que hace posible mantener dos
+        backends sin duplicar el motor, y un nucleo sin dependencias graficas que
+        cualquier frente puede consumir.
+      </p>
+
+      <div class="arquitectura">
+        <ArquitecturaDiagrama />
+      </div>
+
+      <p class="arquitectura__nota">
+        La historia completa, con las decisiones y sus motivos, esta en la
+        <a href={ruta('/docs/arquitectura/')}>documentacion de arquitectura</a>.
+      </p>
+    </div>
+  </section>
+
+  <!-- Documentacion -->
+  <section class="seccion seccion--alternada" aria-labelledby="titulo-docs">
+    <div class="container">
+      <div class="seccion__cabecera">
+        <div>
+          <p class="eyebrow">Documentacion</p>
+          <h2 class="section-heading" id="titulo-docs">Lo que hay que saber, escrito</h2>
+          <p class="section-lede">
+            Manuales de uso, guias de arquitectura, convenciones y notas de los
+            proyectos. La documentacion viaja con el codigo y se actualiza con el.
+          </p>
+        </div>
+        <a class="enlace-flecha" href={ruta('/docs/')}>
+          Indice completo
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path
+              d="M5 12h13m0 0-5.5-5.5M18 12l-5.5 5.5"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"></path>
+          </svg>
+        </a>
+      </div>
+
+      <ul class="rejilla-docs">
+        {
+          destacados.map((doc) => (
+            <li>
+              <a class="doc-enlace" href={ruta(`/docs/${doc.id}/`)}>
+                <span class="doc-enlace__seccion">{doc.data.seccion}</span>
+                <h3 class="doc-enlace__titulo">{doc.data.titulo}</h3>
+                <p class="doc-enlace__texto">{doc.data.descripcion}</p>
+                <span class="doc-enlace__cta">Leer</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- Llamado final -->
+  <section class="cierre">
+    <div class="container container--prose">
+      <h2 class="cierre__titulo">Empieza por donde duela</h2>
+      <p class="cierre__texto">
+        Si vienes a hacer un juego, empieza por el manual del editor. Si vienes a
+        tocar el motor, por la arquitectura del core. Si vienes a automatizar, por
+        el protocolo de la CLI.
+      </p>
+      <div class="cierre__acciones">
+        <Boton href={ruta('/docs/guia/inicio/')}>Primeros pasos</Boton>
+        <Boton variante="secundario" href={SITE.repositorio} externo>Ver en GitHub</Boton>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* ---------------------------------------------------------------- */
+  /* Encabezado principal                                              */
+  /* ---------------------------------------------------------------- */
+  .hero {
+    position: relative;
+    isolation: isolate;
+    padding-block: var(--space-10) var(--space-9);
+    border-block-end: var(--border-width) solid var(--border-subtle);
+  }
+
+  .hero__interior {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    gap: var(--space-5);
+    justify-items: start;
+  }
+
+  .hero__titulo {
+    font-family: var(--font-serif);
+    font-size: var(--text-5xl);
+    font-weight: 400;
+    letter-spacing: -0.025em;
+    line-height: 1.06;
+    max-width: 17ch;
+  }
+
+  .hero__titulo em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .hero__entradilla {
+    max-width: 58ch;
+    font-size: var(--text-lg);
+    color: var(--text-muted);
+    line-height: var(--leading-snug);
+  }
+
+  .hero__acciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-block-start: var(--space-2);
+  }
+
+  .hero__cifras {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-5) var(--space-6);
+    margin: var(--space-6) 0 0;
+    padding-block-start: var(--space-6);
+    border-block-start: var(--border-width) solid var(--border-subtle);
+    width: 100%;
+    max-width: 46rem;
+  }
+
+  @media (min-width: 40rem) {
+    .hero__cifras {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  .cifra__valor {
+    font-family: var(--font-mono);
+    font-size: var(--text-xl);
+    font-weight: 600;
+    letter-spacing: var(--tracking-tight);
+    color: var(--text);
+  }
+
+  .cifra__texto {
+    margin: 0;
+    font-size: var(--text-sm);
+    color: var(--text-subtle);
+  }
+
+  /* ---------------------------------------------------------------- */
+  /* Secciones                                                         */
+  /* ---------------------------------------------------------------- */
+  .seccion {
+    padding-block: var(--space-10);
+  }
+
+  .seccion--alternada {
+    background: var(--surface-sunken);
+    border-block: var(--border-width) solid var(--border-subtle);
+  }
+
+  .seccion__cabecera {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--space-4);
+    margin-block-end: var(--space-7);
+  }
+
+  .enlace-flecha {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-base);
+    font-weight: 550;
+    color: var(--text);
+    padding-block: var(--space-2);
+  }
+
+  .enlace-flecha:hover {
+    color: var(--accent);
+  }
+
+  .enlace-flecha svg {
+    transition: transform var(--duration-base) var(--ease-out);
+  }
+
+  .enlace-flecha:hover svg {
+    transform: translateX(3px);
+  }
+
+  /* Pilares */
+  .pilares {
+    list-style: none;
+    margin: var(--space-7) 0 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-6);
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  }
+
+  .pilar {
+    display: grid;
+    gap: var(--space-2);
+    align-content: start;
+    padding-block-start: var(--space-4);
+    border-block-start: var(--border-width) solid var(--border);
+  }
+
+  .pilar__indice {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--accent);
+    letter-spacing: var(--tracking-wide);
+  }
+
+  .pilar__titulo {
+    font-size: var(--text-lg);
+  }
+
+  .pilar__texto {
+    color: var(--text-muted);
+    font-size: var(--text-base);
+  }
+
+  /* Proyectos */
+  .rejilla-proyectos {
+    display: grid;
+    gap: var(--space-4);
+    grid-template-columns: repeat(auto-fill, minmax(19rem, 1fr));
+  }
+
+  /* Arquitectura */
+  .arquitectura {
+    margin-block-start: var(--space-7);
+  }
+
+  .arquitectura__nota {
+    margin-block-start: var(--space-5);
+    font-size: var(--text-base);
+    color: var(--text-muted);
+    text-align: center;
+  }
+
+  .arquitectura__nota a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  /* Documentacion */
+  .rejilla-docs {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-4);
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  }
+
+  .doc-enlace {
+    display: grid;
+    gap: var(--space-2);
+    align-content: start;
+    height: 100%;
+    padding: var(--space-5);
+    border-radius: var(--radius-lg);
+    border: var(--border-width) solid var(--border);
+    background: var(--surface);
+    transition:
+      transform var(--duration-base) var(--ease-out),
+      border-color var(--duration-base) var(--ease-out),
+      box-shadow var(--duration-base) var(--ease-out);
+  }
+
+  .doc-enlace:hover {
+    transform: translateY(-3px);
+    border-color: var(--border-strong);
+    box-shadow: var(--shadow-md);
+  }
+
+  .doc-enlace__seccion {
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    letter-spacing: var(--tracking-widest);
+    text-transform: uppercase;
+    color: var(--text-subtle);
+  }
+
+  .doc-enlace__titulo {
+    font-size: var(--text-lg);
+  }
+
+  .doc-enlace__texto {
+    color: var(--text-muted);
+    font-size: var(--text-base);
+  }
+
+  .doc-enlace__cta {
+    margin-block-start: var(--space-2);
+    font-size: var(--text-sm);
+    font-weight: 550;
+    color: var(--accent);
+  }
+
+  /* Cierre */
+  .cierre {
+    padding-block: var(--space-10);
+    text-align: center;
+  }
+
+  .cierre__titulo {
+    font-family: var(--font-serif);
+    font-size: var(--text-3xl);
+    font-weight: 400;
+  }
+
+  .cierre__texto {
+    margin-block-start: var(--space-3);
+    color: var(--text-muted);
+    font-size: var(--text-lg);
+    line-height: var(--leading-snug);
+  }
+
+  .cierre__acciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    justify-content: center;
+    margin-block-start: var(--space-6);
+  }
+
+  /* Escalonado de la animacion de entrada. */
+  .hero .reveal:nth-child(2) {
+    animation-delay: 60ms;
+  }
+  .hero .reveal:nth-child(3) {
+    animation-delay: 120ms;
+  }
+  .hero .reveal:nth-child(4) {
+    animation-delay: 180ms;
+  }
+  .hero .reveal:nth-child(5) {
+    animation-delay: 240ms;
+  }
+</style>

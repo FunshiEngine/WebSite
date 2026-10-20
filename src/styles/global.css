@@ -1,0 +1,399 @@
+/*
+ * Estilos base del sitio.
+ *
+ * Solo se define aqui lo que es global: reset, tipografia, utilidades de
+ * layout y el estilo del contenido Markdown/MDX. El CSS especifico de cada
+ * componente vive junto al componente (bloques `<style>` de Astro).
+ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--header-height) + var(--space-5));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+body {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  font-synthesis-weight: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  color: var(--text);
+  background-color: var(--page);
+  overflow-x: hidden;
+}
+
+main {
+  flex: 1 0 auto;
+}
+
+img,
+picture,
+svg,
+video {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 600;
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+ul,
+ol {
+  padding-inline-start: var(--space-5);
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--accent-contrast);
+}
+
+hr {
+  border: none;
+  border-top: var(--border-width) solid var(--border);
+  margin-block: var(--space-8);
+}
+
+/* ------------------------------------------------------------------ */
+/* Utilidades de layout                                                */
+/* ------------------------------------------------------------------ */
+
+.container {
+  width: 100%;
+  max-width: var(--layout-max);
+  margin-inline: auto;
+  padding-inline: var(--space-5);
+}
+
+@media (min-width: 48rem) {
+  .container {
+    padding-inline: var(--space-6);
+  }
+}
+
+.container--wide {
+  max-width: var(--layout-wide);
+}
+
+.container--prose {
+  max-width: var(--layout-prose);
+}
+
+.stack > * + * {
+  margin-block-start: var(--space-4);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: absolute;
+  left: var(--space-4);
+  top: var(--space-4);
+  z-index: 100;
+  padding: var(--space-3) var(--space-5);
+  background: var(--accent);
+  color: var(--accent-contrast);
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  transform: translateY(-200%);
+  transition: transform var(--duration-base) var(--ease-out);
+}
+
+.skip-link:focus-visible {
+  transform: translateY(0);
+}
+
+/* Etiqueta superior: el "eyebrow" que precede a cada seccion. */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  font-weight: 500;
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.eyebrow::before {
+  content: '';
+  width: 1.5rem;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.55;
+}
+
+.eyebrow--plain::before {
+  display: none;
+}
+
+.section-heading {
+  font-size: var(--text-2xl);
+  margin-block-end: var(--space-3);
+}
+
+.section-lede {
+  color: var(--text-muted);
+  font-size: var(--text-lg);
+  max-width: 60ch;
+  line-height: var(--leading-snug);
+}
+
+/* ------------------------------------------------------------------ */
+/* Contenido Markdown / MDX (prosa)                                   */
+/* ------------------------------------------------------------------ */
+
+.prose {
+  font-size: var(--text-md);
+  line-height: var(--leading-normal);
+  color: var(--text);
+}
+
+.prose > * + * {
+  margin-block-start: var(--space-4);
+}
+
+.prose h2,
+.prose h3,
+.prose h4 {
+  margin-block-start: var(--space-8);
+  scroll-margin-top: calc(var(--header-height) + var(--space-5));
+}
+
+.prose h2 {
+  font-size: var(--text-xl);
+  padding-block-end: var(--space-2);
+  border-block-end: var(--border-width) solid var(--border-subtle);
+}
+
+.prose h3 {
+  font-size: var(--text-lg);
+}
+
+.prose h4 {
+  font-size: var(--text-md);
+  color: var(--text-muted);
+}
+
+.prose > :first-child {
+  margin-block-start: 0;
+}
+
+.prose a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-color: var(--accent-line);
+  text-underline-offset: 0.2em;
+  transition: text-decoration-color var(--duration-fast) var(--ease-out);
+}
+
+.prose a:hover {
+  text-decoration-color: var(--accent);
+}
+
+.prose strong {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.prose ul,
+.prose ol {
+  padding-inline-start: var(--space-5);
+}
+
+.prose li + li {
+  margin-block-start: var(--space-2);
+}
+
+.prose li::marker {
+  color: var(--text-subtle);
+}
+
+.prose blockquote {
+  margin-inline: 0;
+  padding: var(--space-3) var(--space-5);
+  border-inline-start: 2px solid var(--accent);
+  background: var(--surface-inset);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.prose code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  padding: 0.15em 0.4em;
+  border-radius: var(--radius-sm);
+  background: var(--surface-inset);
+  border: var(--border-width) solid var(--border-subtle);
+  overflow-wrap: break-word;
+}
+
+.prose pre {
+  margin-block: var(--space-5);
+  padding: var(--space-4) var(--space-5);
+  border-radius: var(--radius-md);
+  border: var(--border-width) solid var(--border);
+  background: var(--surface-sunken) !important;
+  overflow-x: auto;
+  font-size: var(--text-sm);
+  line-height: 1.6;
+}
+
+.prose pre code {
+  padding: 0;
+  background: none;
+  border: none;
+  font-size: inherit;
+}
+
+.prose img {
+  border-radius: var(--radius-md);
+  border: var(--border-width) solid var(--border);
+}
+
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-base);
+  display: block;
+  overflow-x: auto;
+}
+
+.prose thead th {
+  text-align: left;
+  font-weight: 600;
+  color: var(--text);
+  border-block-end: var(--border-width) solid var(--border-strong);
+}
+
+.prose th,
+.prose td {
+  padding: var(--space-3) var(--space-4);
+  border-block-end: var(--border-width) solid var(--border-subtle);
+  vertical-align: top;
+}
+
+.prose tbody tr:hover {
+  background: var(--surface-inset);
+}
+
+.prose hr {
+  margin-block: var(--space-8);
+}
+
+/* Encabezados con ancla al hacer clic. */
+.heading-anchor {
+  color: var(--text-subtle);
+  font-weight: 400;
+  margin-inline-start: var(--space-2);
+  opacity: 0;
+  transition: opacity var(--duration-fast) var(--ease-out);
+}
+
+h2:hover > .heading-anchor,
+h3:hover > .heading-anchor,
+h4:hover > .heading-anchor,
+.heading-anchor:focus-visible {
+  opacity: 1;
+}
+
+/* ------------------------------------------------------------------ */
+/* Transiciones de pagina                                              */
+/* ------------------------------------------------------------------ */
+
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes fade-rise {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  .reveal {
+    animation: fade-rise var(--duration-slow) var(--ease-out) both;
+  }
+}

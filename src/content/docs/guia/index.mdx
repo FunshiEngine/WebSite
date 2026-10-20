@@ -1,0 +1,33 @@
+---
+titulo: Guía
+descripcion: "Cómo trabajar dentro de la organización: primeros pasos, estilo de código, ramas y commits, y reglas de documentación."
+seccion: Guía
+orden: 1
+---
+
+La guía reúne las cuatro cosas que conviene saber antes de tocar un repositorio
+de la organización: cómo se compila y ejecuta cada proyecto, cómo se escribe el
+código, cómo se organizan las ramas y los commits, y cómo se mantiene la
+documentación al día.
+
+## En esta sección
+
+- [Primeros pasos](/docs/guia/inicio/) — requisitos, compilación y ejecución de cada proyecto.
+- [Estilo de código](/docs/guia/estilo-de-codigo/) — convenciones compartidas por todos los repositorios.
+- [Ramas y commits](/docs/guia/ramas-y-commits/) — el flujo de trabajo y el formato de los mensajes.
+- [Documentación](/docs/guia/documentacion/) — qué se documenta, dónde y cómo.
+
+## El resumen
+
+1. **El código y sus comentarios están en español.** Los identificadores, los
+   comentarios y los logs se escriben en español; los términos técnicos que no
+   tienen traducción natural se dejan en inglés.
+2. **Todo se construye con CMake** en los repositorios de C++, y con Gradle en
+   el asistente de escritorio.
+3. **Cada cambio llega con su documentación.** Si el cambio altera un
+   comportamiento observable, la documentación se actualiza en el mismo commit.
+4. **Los commits son atómicos y convencionales**: `feat:`, `fix:`, `docs:`,
+   `refactor:`, `chore:`.
+5. **Nada se da por cerrado hasta que hay pruebas en verde.** Un test que
+   demuestra el defecto antes de la corrección y su ausencia después es el
+   estándar.

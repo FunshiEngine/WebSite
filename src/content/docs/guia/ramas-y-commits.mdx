@@ -1,0 +1,118 @@
+---
+titulo: Ramas y commits
+descripcion: El flujo de trabajo con ramas, el formato de los mensajes de commit y las reglas de pull request de la organización.
+seccion: Guía
+orden: 4
+---
+
+## Ramas
+
+La organización trabaja con ramas nombradas por tipo de cambio, con el prefijo
+que describe la intención:
+
+```text
+feat/<descripcion>          # una funcionalidad nueva
+fix/<descripcion>           # una corrección
+docs/<descripcion>          # solo documentación
+chore/<descripcion>         # tareas de mantenimiento
+diag/<descripcion>          # instrumentación temporal de diagnóstico
+```
+
+El motor (`FunshiEngineOpenGL`) usa además un flujo de promoción por etapas:
+
+| Rama | Contenido |
+|---|---|
+| `develop` | integración continua, con lo último |
+| `test` | candidato a prueba |
+| `staging` | candidato a publicación |
+| `release` | el commit exacto que se etiqueta |
+| `master` | la versión publicada |
+
+La promoción se hace de una en una, en ese orden, y cada etapa se etiqueta
+solo cuando su contenido está verificado.
+
+## Commits
+
+Los mensajes son convencionales, en inglés, y describen **solo la
+implementación**:
+
+```text
+feat(sombras): dibujar el mapa de sombra de cada luz y aplicarlo en las mallas
+fix: enlazar la biblioteca del motor construida desde el submódulo
+docs: documentar la arquitectura sin API gráfica
+refactor: extraer el registro de diagnósticos del módulo de GUI
+chore: actualizar el encabezado de copyright
+```
+
+La forma es `tipo(ámbito): descripción en imperativo`. El alcance es opcional y
+señala la parte del sistema afectada; el tipo es siempre uno de estos:
+
+| Tipo | Cuándo |
+|---|---|
+| `feat` | funcionalidad nueva |
+| `fix` | corrección de un defecto |
+| `docs` | documentación |
+| `refactor` | cambio de estructura sin cambiar el comportamiento |
+| `chore` | mantenimiento que no es código de producto |
+| `test` | solo pruebas |
+| `ci` | integración continua y automatización |
+
+### Qué va en un commit
+
+- **Un tema por commit.** Si el commit necesita dos explicaciones, son dos.
+- **El mensaje explica el porqué.** El *qué* ya está en el diff; el motivo, no.
+- **Sin atribuciones ajenas al cambio.** Nunca `Co-authored-by` por cortesía.
+- **El diff se lee entero.** Si un archivo tiene cambios que no pertenecen al
+  tema, el commit está mal formado.
+
+### Qué va con el cambio
+
+La documentación que el cambio afecta **va en el mismo commit**. Si una
+funcionalidad cambia una forma de uso, el `README` o el manual se actualizan
+antes de dar por cerrada la tarea.
+
+## Pull requests
+
+- El PR describe **qué cambia y por qué**, en un párrafo, y lista los pasos
+  para probarlo.
+- La CI tiene que estar **en verde** antes de fusionar. En el motor, el job de
+  Windows de publicación **también ejecuta las pruebas**: un test rojo bloquea
+  también la publicación.
+- Cuando el PR toca un comando o una API, además de la CI se **invoca el
+  binario** con una solicitud real y se verifican respuesta y código de salida.
+
+## Verificación antes de commitear
+
+```bash
+# 1. Compilación completa
+cmake --build build -j$(nproc)
+
+# 2. Suite de pruebas
+ctest --test-dir build --output-on-failure
+
+# 3. Comprobación manual del comportamiento cambiado
+build/FunshiCLI --request-file solicitud.json
+```
+
+En los repositorios con Kotlin:
+
+```bash
+./gradlew test
+```
+
+En el sitio de la organización:
+
+```bash
+npm run check
+npm run build
+```
+
+## Cuando algo falla
+
+Un fallo de build raro **no se atribuye al código sin más**. La organización
+tiene un hábito útil al respecto: antes de culpar al código, se descarta el
+entorno. Un disco lleno, un `PATH` sin las DLLs de runtime o una terminal sin
+consola producen fallos que parecen de código.
+
+Y el criterio de cierre es siempre el mismo: **un cambio no está resuelto
+hasta que el usuario lo ha probado y ha confirmado**.

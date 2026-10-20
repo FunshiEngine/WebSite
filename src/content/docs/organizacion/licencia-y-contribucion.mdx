@@ -1,0 +1,75 @@
+---
+titulo: Licencia y contribución
+descripcion: La licencia Apache 2.0 que aplican los proyectos, cómo reportar un problema y cómo enviar un cambio.
+seccion: Organización
+orden: 2
+---
+
+## Licencia
+
+El código y la documentación de todos los proyectos de la organización se
+publican bajo la **licencia Apache 2.0**.
+
+Eso permite usarlos, modificarlos y distribuirlos, incluidos los usos
+comerciales, siempre que se cite la licencia y se indiquen los cambios
+realizados. La licencia incluye además una **cláusula de patente explícita**:
+quien contribuya cede sus patentes de forma irrevocable, y quien use el proyecto
+queda protegido frente a Claims de patente de los contribuidores.
+
+El archivo `LICENSE` está en la raíz de cada repositorio. Los archivos que
+aportan código llevan además el encabezado o la línea
+`SPDX-License-Identifier: Apache-2.0`.
+
+## Reportar un problema
+
+Cada repositorio tiene su propio *tracker* de incidencias. Un informe útil
+lleva:
+
+1. **Qué se esperaba** y **qué pasó**, en ese orden.
+2. **Cómo reproducirlo**: el comando exacto, la solicitud JSON o los pasos.
+3. **El entorno**: sistema operativo, versión del compilador, versión del
+   proyecto.
+4. **La salida**: el log o la respuesta, tal cual salió.
+
+Si el problema se ha diagnosticado, **añade también la causa y el camino que
+siguió**. La organización registra los fallos técnicos a propósito: lo que costó
+horas no debería costarles a los siguientes.
+
+## Enviar un cambio
+
+1. **Abre una incidencia** antes de escribir código, si el cambio no es trivial.
+   Sirve para acordar el enfoque.
+2. **Trabaja en una rama** con el prefijo que describe la intención:
+   `feat/`, `fix/`, `docs/`, `chore/`, `diag/`.
+3. **Escribe el código** siguiendo las
+   [convenciones de la organización](/docs/guia/estilo-de-codigo/).
+4. **Añade o actualiza las pruebas.** Un defecto se cierra con una prueba que
+   falla antes de la corrección y pasa después.
+5. **Actualiza la documentación** que el cambio afecta, en el mismo commit.
+6. **Abre el pull request** describiendo qué cambia, por qué y cómo se prueba.
+
+### Qué se espera de un pull request
+
+- La CI en **verde**.
+- **Commits atómicos y convencionales**, un tema por commit.
+- El mensaje explica **el porqué**; el *qué* ya está en el diff.
+- Sin atribuciones ajenas al cambio.
+
+### Qué no se acepta
+
+- Cambios que mezclan temas distintos.
+- Funcionalidad sin pruebas, cuando el repositorio tiene forma de probarla.
+- Código muerto: lo diseñado y no implementado se documenta, no se deja en el
+  árbol.
+- Comentarios que hablan de tareas, fases o fechas en lugar de del
+  comportamiento del código.
+
+## Conducta
+
+Se trabaja con respeto y en español. Las discusiones técnicas se centran en
+el código y en las decisiones técnicas, no en las personas.
+
+## Contacto
+
+- **Incidencias y código**: el *tracker* de cada repositorio.
+- **Organización en GitHub**: [github.com/FunshiEngine](https://github.com/FunshiEngine).

@@ -1,0 +1,32 @@
+---
+titulo: Proyectos
+descripcion: La documentación de cada repositorio de la organización, agrupada por proyecto.
+seccion: Proyectos
+orden: 1
+---
+
+Cada repositorio tiene su propia documentación, y aquí está reunida y ordenada
+por proyecto. Las páginas de este bloque describen **cómo se usa y cómo está
+hecho** cada pieza; los manuales completos viven en el repositorio
+correspondiente y se mantienen al día junto al código.
+
+## El conjunto
+
+| Proyecto | Rol | En una línea |
+|---|---|---|
+| [FunshiEngineCore](/docs/proyectos/funshiengine-core/) | Núcleo | El contrato de render del motor, sin API gráfica |
+| [FunshiEngineGL](/docs/proyectos/funshiengine-opengl/) | Motor | Editor y motor resueltos sobre OpenGL 3.3 Core |
+| [FunshiEngineVK](/docs/proyectos/funshiengine-vulkan/) | Backend | El mismo motor, resuelto sobre Vulkan |
+| [FunshiEngineCLI](/docs/proyectos/funshiengine-cli/) | Herramienta | El motor desde la terminal: JSON en stdin, JSON en stdout |
+| [FunshiEngineAI](/docs/proyectos/funshiengine-ai/) | Asistente | Asistente de escritorio con RAG, herramientas y MCP |
+| [Silvy](/docs/proyectos/silvy/) | Agente | El cerebro del agente de IA de código del motor |
+
+## Por dónde empezar
+
+- **Si quieres hacer un juego**, el [motor sobre OpenGL](/docs/proyectos/funshiengine-opengl/).
+- **Si quieres tocar el motor**, el [núcleo](/docs/proyectos/funshiengine-core/) y su
+  [arquitectura](/docs/arquitectura/).
+- **Si quieres automatizar**, la [terminal](/docs/proyectos/funshiengine-cli/) y su
+  [catálogo de comandos](/docs/proyectos/funshiengine-cli/comandos/).
+- **Si quieres que la IA escriba código**, el [asistente](/docs/proyectos/funshiengine-ai/)
+  y el [agente](/docs/proyectos/silvy/).

@@ -1,0 +1,113 @@
+---
+import type { NodoDoc } from '../lib/docs';
+
+/**
+ * Nodo del arbol de navegacion de la documentacion.
+ *
+ * Un nodo con hijos puede tener su propia pagina (una "seccion" de la
+ * documentacion) o ser solo un contenedor de agrupacion.
+ */
+interface Props {
+  nodo: NodoDoc;
+  /** Identificador de la pagina activa. */
+  activo?: string;
+  /** Seccion activa, para resaltar el grupo. */
+  seccion?: string;
+  /** Profundidad actual, para el sangrado. */
+  nivel?: number;
+}
+
+const { nodo, activo, seccion, nivel = 0 } = Astro.props;
+
+const esActivo = nodo.id === activo;
+const dentroDeSeccion = seccion ? nodo.id === seccion || nodo.id.startsWith(`${seccion}/`) : false;
+---
+
+<li class:list={['nodo', { 'nodo--activo': esActivo, 'nodo--seccion': dentroDeSeccion }]}>
+  <a
+    href={nodo.href}
+    class="nodo__enlace"
+    style={`--nivel: ${nivel}`}
+    aria-current={esActivo ? 'page' : undefined}
+  >
+    {nodo.titulo}
+  </a>
+
+  {
+    nodo.hijos && nodo.hijos.length > 0 && (
+      <ul class="nodo__hijos">
+        {nodo.hijos.map((hijo) => (
+          <li>
+            <a
+              href={hijo.href}
+              class="nodo__enlace"
+              style={`--nivel: ${nivel + 1}`}
+              aria-current={hijo.id === activo ? 'page' : undefined}
+            >
+              {hijo.titulo}
+            </a>
+            {hijo.hijos && hijo.hijos.length > 0 && (
+              <ul class="nodo__hijos">
+                {hijo.hijos.map((nieto) => (
+                  <li>
+                    <a
+                      href={nieto.href}
+                      class="nodo__enlace"
+                      style={`--nivel: ${nivel + 2}`}
+                      aria-current={nieto.id === activo ? 'page' : undefined}
+                    >
+                      {nieto.titulo}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</li>
+
+<style>
+  .nodo {
+    list-style: none;
+  }
+
+  .nodo__enlace {
+    display: block;
+    padding: 0.32rem 0.6rem;
+    padding-inline-start: calc(0.6rem + var(--nivel) * 0.85rem);
+    border-radius: var(--radius-sm);
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+    line-height: 1.4;
+    transition:
+      color var(--duration-fast) var(--ease-out),
+      background-color var(--duration-fast) var(--ease-out);
+  }
+
+  .nodo__enlace:hover {
+    color: var(--text);
+    background: var(--surface-hover);
+  }
+
+  .nodo--seccion > .nodo__enlace {
+    color: var(--text);
+    font-weight: 550;
+  }
+
+  .nodo__enlace[aria-current='page'] {
+    color: var(--accent);
+    background: var(--accent-soft);
+    font-weight: 550;
+  }
+
+  .nodo__hijos {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 1px;
+  }
+</style>

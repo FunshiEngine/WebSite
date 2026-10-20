@@ -1,0 +1,59 @@
+---
+import { SITE, recurso } from '../lib/site';
+
+interface Props {
+  titulo?: string;
+  descripcion?: string;
+  /** Ruta (relativa a `public/`) de la imagen para redes sociales. */
+  imagen?: string;
+  /** Tipo de la pagina, para las etiquetas Open Graph. */
+  tipo?: 'website' | 'article';
+}
+
+const {
+  titulo,
+  descripcion = SITE.descripcion,
+  imagen = '/og-image.png',
+  tipo = 'website',
+} = Astro.props;
+
+const tituloCompleto = titulo ? `${titulo} · ${SITE.titulo}` : `${SITE.titulo} — Motor y editor de juegos`;
+const imagenAbsoluta = new URL(recurso(imagen), Astro.site ?? SITE.url).href;
+const urlCanonica = new URL(Astro.url.pathname, Astro.site ?? SITE.url).href;
+---
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="generator" content={Astro.generator} />
+
+<title>{tituloCompleto}</title>
+<meta name="description" content={descripcion} />
+<link rel="canonical" href={urlCanonica} />
+
+<meta name="author" content={SITE.organizacion} />
+<meta name="color-scheme" content="light dark" />
+<meta name="theme-color" content="#07080b" media="(prefers-color-scheme: dark)" />
+<meta name="theme-color" content="#fbfaf8" media="(prefers-color-scheme: light)" />
+
+<!-- Open Graph -->
+<meta property="og:type" content={tipo} />
+<meta property="og:site_name" content={SITE.titulo} />
+<meta property="og:locale" content={SITE.locale} />
+<meta property="og:title" content={tituloCompleto} />
+<meta property="og:description" content={descripcion} />
+<meta property="og:url" content={urlCanonica} />
+<meta property="og:image" content={imagenAbsoluta} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content={`${SITE.titulo} — ${SITE.descripcionCorta}`} />
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={tituloCompleto} />
+<meta name="twitter:description" content={descripcion} />
+<meta name="twitter:image" content={imagenAbsoluta} />
+
+<link rel="icon" href={recurso('/favicon.svg')} type="image/svg+xml" />
+<link rel="apple-touch-icon" href={recurso('/apple-touch-icon.png')} />
+<link rel="sitemap" href={recurso('/sitemap-index.xml')} />
+<link rel="alternate" type="application/rss+xml" title={SITE.titulo} href={recurso('/rss.xml')} />

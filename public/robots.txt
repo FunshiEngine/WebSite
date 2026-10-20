@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://funshiengine.github.io/WebSite/sitemap-index.xml

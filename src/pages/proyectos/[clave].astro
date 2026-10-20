@@ -1,0 +1,341 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import Badge from '../../components/Badge.astro';
+import Boton from '../../components/Boton.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import { ETIQUETAS_ESTADO, obtenerProyectos } from '../../lib/proyectos';
+import { obtenerDocsDeProyecto } from '../../lib/docs';
+import { ruta } from '../../lib/site';
+import { render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const proyectos = await obtenerProyectos();
+  return proyectos.map((proyecto) => ({
+    params: { clave: proyecto.data.clave },
+    props: { proyecto },
+  }));
+}
+
+const { proyecto } = Astro.props;
+const { data } = proyecto;
+
+const { Content } = await render(proyecto);
+
+const documentacion = await obtenerDocsDeProyecto(data.clave);
+const otros = (await obtenerProyectos()).filter((p) => p.data.clave !== data.clave);
+---
+
+<BaseLayout titulo={data.nombre} descripcion={`${data.lema}. ${data.aspectos[0] ?? ''}`}>
+  <div style={`--proyecto-color: ${data.color}`}>
+    <PageHeader
+      eyebrow={data.rol}
+      titulo={data.nombre}
+      lede={data.lema}
+      volver={{ texto: 'Todos los proyectos', href: '/proyectos/' }}
+    >
+      <Badge texto={ETIQUETAS_ESTADO[data.estado]} variante="acento" conPunto />
+      <Badge texto={data.licencia} variante="contorno" />
+      {data.version && <Badge texto={`v${data.version}`} variante="contorno" />}
+      <Boton href={data.repositorio} externo>
+        Ver en GitHub
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path
+            d="M12 .8a11.2 11.2 0 0 0-3.54 21.82c.56.1.77-.24.77-.54v-2.1c-3.12.68-3.78-1.34-3.78-1.34-.51-1.3-1.25-1.65-1.25-1.65-1.02-.7.08-.68.08-.68 1.13.08 1.72 1.16 1.72 1.16 1 1.72 2.62 1.22 3.26.94.1-.73.39-1.22.71-1.5-2.49-.28-5.11-1.25-5.11-5.56 0-1.23.44-2.23 1.16-3.02-.12-.28-.5-1.43.11-2.98 0 0 .95-.3 3.1 1.15a10.7 10.7 0 0 1 5.64 0c2.15-1.46 3.1-1.15 3.1-1.15.61 1.55.23 2.7.11 2.98.72.79 1.16 1.79 1.16 3.02 0 4.32-2.63 5.27-5.13 5.55.4.35.76 1.04.76 2.1v3.11c0 .3.2.65.78.54A11.2 11.2 0 0 0 12 .8Z"
+          ></path>
+        </svg>
+      </Boton>
+    </PageHeader>
+
+    <section class="seccion">
+      <div class="contenido">
+        <article class="prose descripcion">
+          <Content />
+        </article>
+
+        <aside class="lateral">
+          <section class="panel">
+            <h2 class="panel__titulo">Detalles</h2>
+            <dl class="detalles">
+              <div class="detalle">
+                <dt>Rol</dt>
+                <dd>{data.rol}</dd>
+              </div>
+              <div class="detalle">
+                <dt>Estado</dt>
+                <dd>{ETIQUETAS_ESTADO[data.estado]}</dd>
+              </div>
+              {
+                data.version && (
+                  <div class="detalle">
+                    <dt>Version</dt>
+                    <dd>v{data.version}</dd>
+                  </div>
+                )
+              }
+              <div class="detalle">
+                <dt>Licencia</dt>
+                <dd>{data.licencia}</dd>
+              </div>
+            </dl>
+          </section>
+
+          <section class="panel">
+            <h2 class="panel__titulo">Tecnologias</h2>
+            <ul class="stack-tags">
+              {data.stack.map((tecnologia) => <li>{tecnologia}</li>)}
+            </ul>
+          </section>
+
+          {
+            documentacion.length > 0 && (
+              <section class="panel">
+                <h2 class="panel__titulo">Documentacion</h2>
+                <ul class="lista-docs">
+                  {documentacion.map((doc) => (
+                    <li>
+                      <a href={ruta(`/docs/${doc.id}/`)}>
+                        {doc.data.titulo}
+                        <span class="lista-docs__flecha" aria-hidden="true">
+                          &rarr;
+                        </span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )
+          }
+        </aside>
+      </div>
+    </section>
+
+    {
+      data.aspectos.length > 0 && (
+        <section class="seccion seccion--alternada">
+          <div class="container">
+            <p class="eyebrow">En resumen</p>
+            <h2 class="section-heading">Lo que aporta</h2>
+            <ul class="aspectos">
+              {data.aspectos.map((aspecto) => (
+                <li>{aspecto}</li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      )
+    }
+
+    <section class="seccion">
+      <div class="container">
+        <p class="eyebrow">Seguir explorando</p>
+        <h2 class="section-heading">Otros proyectos</h2>
+        <div class="rejilla">
+          {otros.slice(0, 3).map((otro) => (
+            <ProjectCard proyecto={otro} />
+          ))}
+        </div>
+        <p class="pie-enlace">
+          <a class="enlace-flecha" href={ruta('/proyectos/')}>
+            Ver los {otros.length + 1} proyectos
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path
+                d="M5 12h13m0 0-5.5-5.5M18 12l-5.5 5.5"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              ></path>
+            </svg>
+          </a>
+        </p>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .seccion {
+    padding-block: var(--space-6) var(--space-9);
+  }
+
+  .contenido {
+    display: grid;
+    gap: var(--space-8);
+    align-items: start;
+    width: 100%;
+    max-width: var(--layout-wide);
+    margin-inline: auto;
+    padding-inline: var(--space-5);
+  }
+
+  @media (min-width: 64rem) {
+    .contenido {
+      grid-template-columns: minmax(0, 1fr) 18rem;
+      gap: var(--space-9);
+      padding-inline: var(--space-6);
+    }
+  }
+
+  .descripcion {
+    max-width: var(--layout-prose);
+  }
+
+  .lateral {
+    display: grid;
+    gap: var(--space-4);
+    align-content: start;
+    position: sticky;
+    top: calc(var(--header-height) + var(--space-4));
+  }
+
+  @media (max-width: 63.999rem) {
+    .lateral {
+      position: static;
+    }
+  }
+
+  .panel {
+    padding: var(--space-5);
+    border-radius: var(--radius-lg);
+    border: var(--border-width) solid var(--border);
+    background: var(--surface);
+  }
+
+  .panel__titulo {
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    font-weight: 500;
+    letter-spacing: var(--tracking-widest);
+    text-transform: uppercase;
+    color: var(--text-subtle);
+    margin-block-end: var(--space-3);
+  }
+
+  .detalles {
+    margin: 0;
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .detalle {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+
+  .detalle dt {
+    font-size: var(--text-sm);
+    color: var(--text-subtle);
+  }
+
+  .detalle dd {
+    margin: 0;
+    font-size: var(--text-sm);
+    font-weight: 550;
+    text-align: right;
+  }
+
+  .stack-tags {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .stack-tags li {
+    padding: 0.15rem 0.55rem;
+    border-radius: var(--radius-sm);
+    border: var(--border-width) solid var(--border-subtle);
+    background: var(--surface-inset);
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    color: var(--text-muted);
+  }
+
+  .lista-docs {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-1);
+  }
+
+  .lista-docs a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    margin-inline: calc(var(--space-3) * -1);
+    border-radius: var(--radius-sm);
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+    transition:
+      color var(--duration-fast) var(--ease-out),
+      background-color var(--duration-fast) var(--ease-out);
+  }
+
+  .lista-docs a:hover {
+    color: var(--accent);
+    background: var(--surface-hover);
+  }
+
+  .lista-docs__flecha {
+    opacity: 0;
+    transition: opacity var(--duration-fast) var(--ease-out);
+  }
+
+  .lista-docs a:hover .lista-docs__flecha {
+    opacity: 1;
+  }
+
+  .seccion--alternada {
+    background: var(--surface-sunken);
+    border-block: var(--border-width) solid var(--border-subtle);
+  }
+
+  .aspectos {
+    list-style: none;
+    margin: var(--space-6) 0 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-3);
+    grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+  }
+
+  .aspectos li {
+    position: relative;
+    padding: var(--space-4) var(--space-4) var(--space-4) var(--space-6);
+    border-radius: var(--radius-md);
+    border: var(--border-width) solid var(--border);
+    background: var(--surface);
+    color: var(--text-muted);
+    font-size: var(--text-base);
+  }
+
+  .aspectos li::before {
+    content: '';
+    position: absolute;
+    left: var(--space-4);
+    top: 1.35rem;
+    width: 0.4rem;
+    height: 0.4rem;
+    border-radius: 50%;
+    background: var(--proyecto-color, var(--accent));
+  }
+
+  .rejilla {
+    display: grid;
+    gap: var(--space-4);
+    grid-template-columns: repeat(auto-fill, minmax(19rem, 1fr));
+    margin-block-start: var(--space-6);
+  }
+
+  .pie-enlace {
+    margin-block-start: var(--space-6);
+  }
+</style>

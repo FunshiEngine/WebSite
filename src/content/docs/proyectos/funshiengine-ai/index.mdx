@@ -1,0 +1,130 @@
+---
+titulo: FunshiEngineAI
+descripcion: "El asistente de escritorio del motor: RAG con recuperación BM25, tool calling, cliente MCP propio y un verificador determinista de citas."
+seccion: Proyectos
+proyecto: funshiengine-ai
+orden: 5
+---
+
+`FunshiEngineAI` es un **asistente con IA para el motor gráfico**: construye
+código básico y sugiere documentación según las necesidades del usuario y su
+base de conocimientos, **sin inventar información**. Si no hay una referencia que
+lo respalde, lo dice.
+
+Es una aplicación de escritorio (Compose Multiplatform) con tres módulos:
+`frontend/` (chat), `backend/` (RAG y bucle de herramientas) y `llm-api/`
+(fachada de LLM local o remota).
+
+## La regla central
+
+> No inventar sin referencia.
+
+Es una instrucción blanda: un modelo pequeño puede parafrasear, exagerar o
+inventar. Por eso hay un **verificador post-generación** que lo convierte en una
+comprobación programática:
+
+1. La respuesta declara sus fuentes: las citas `[n]` apuntan a un fragmento
+   indexado, y el mapeo ya existe.
+2. Tras cada respuesta en modo Documentación, la aplicación **reabre cada fuente
+   citada** y comprueba que el fragmento citado esté respaldado por ella:
+   - **literal**, si el fragmento aparece en la fuente;
+   - **sin detalles inventados**, si los nombres propios y los números que dice
+     la respuesta están en la fuente;
+   - **paráfrasis**, si hay suficientes palabras en común, admitiendo plurales y
+     variaciones de verbo.
+3. Cada respuesta muestra un distintivo: **“Citas verificadas (n)”** si todo
+   está respaldado, o cuántas citas quedan **sin respaldo**.
+
+El verificador es **determinista**: no llama al modelo ni a la red, así que se
+puede testear al cien por cien y nunca falla por culpa de la red.
+
+## El RAG
+
+- **Fuentes de conocimiento**: repositorios de GitHub (descarga el *zipball* e
+  indexa `.md`, `.txt`, `.rst`, `.adoc`), documentos internos en `internal-docs/`,
+  documentación propia de cada API en `api-docs/<id>/` y el prompt de sistema,
+  editable sin reiniciar.
+- **Troceado y recuperación**: los documentos se trocean en *chunks* y se
+  recuperan los más relevantes con **BM25** (`topK` configurable).
+- **El prompt** se arma con el system prompt, el contexto recuperado y el
+  historial.
+
+## Herramientas
+
+El modelo puede pedir acciones a la aplicación. Funciona en modo nativo contra
+una API compatible con OpenAI y, en modo local, por protocolo dentro del prompt
+—con reparación del JSON que devuelve el modelo.
+
+| Herramienta | Qué hace |
+|---|---|
+| `get_time` | La hora actual. |
+| `create_file` | Crea un archivo; el resultado llega al chat como adjunto. |
+| `download_url` | Descarga una URL; el resultado llega como adjunto. |
+| `web_search` | Busca en la web sin clave de API, con respaldo en Wikipedia. |
+| `web_fetch` | Trae una página y la devuelve como texto legible. |
+| `latex_compile` | Convierte un documento LaTeX en PDF. |
+
+### Permisos por categoría
+
+Están **apagados por defecto** y se conceden **por chat**:
+
+```text
+/permitir-archivos   /permitir-web   /permitir-mcp
+/permisos            /revocar-<categoría>
+```
+
+Sin permiso concedido, la herramienta pide confirmación con un diálogo
+—«Permitir siempre», «Una vez», «Cancelar»— y los archivos que produce llegan
+al chat como adjuntos que se pueden abrir o guardar.
+
+## MCP de verdad
+
+El cliente MCP es **propio**: habla **JSON-RPC 2.0** sobre stdio con el
+servidor como proceso hijo (`initialize` → `tools/list` → `tools/call`). Sus
+herramientas aparecen en el chat como `mcp__<servidor>__<herramienta>` y piden
+permiso como las demás.
+
+Los servidores se declaran en *Ajustes → Herramientas* y `/mcp` muestra el
+estado con el motivo de cada fallo. El transporte `http` todavía no está
+implementado y la aplicación lo dice.
+
+## La interfaz
+
+- **Chat**: conversaciones con carpetas anidadas, arrastrar y soltar, burbujas
+  con copiar y reiniciar, cola de mensajes mientras la IA responde, tarjetas de
+  herramientas, adjuntos descargables y el estado de permisos.
+- **Modelos**: catálogo con descarga con barra y cancelación, uso de un modelo,
+  y agregado de repositorios o archivos de Hugging Face.
+- **Motor**: segmentado local/remoto, colección de APIs compatibles con OpenAI
+  con «Probar conexión» y documentación propia por API.
+- **Configuración**: tema claro/oscuro y color de acento.
+
+El render de markdown, de los bloques de código y de las fórmulas LaTeX es
+**propio**: las fórmulas `$…$` y `$$…$$` se dibujan con JLaTeXMath, sin conexión
+y sin TeX instalado.
+
+## Configuración
+
+Todo se configura en `app-home/config/app-config.json`, que se crea solo en el
+primer arranque. La configuración se **valida al arrancar** y el error
+`NO_CONFIGURADO` lista **todos** los problemas juntos, no solo el primero. Las
+secciones `tools`, `outputs`, `latex` y `mcp` se editan también desde la
+interfaz y se guardan al instante.
+
+El modelo local por defecto es `Phi-4-mini-instruct-Q4_K_M.gguf`, unos 2,4 GB,
+que se descarga solo en el primer arranque y se reanuda si se corta.
+
+## Ejecución
+
+```bash
+./gradlew :frontend:run
+```
+
+Requiere JDK 21, Gradle y `llama-server` de llama.cpp en el `PATH` (o la ruta
+indicada en `llm.llamaServerPath`). TeX Live o MiKTeX son opcionales y solo se
+necesitan para la herramienta `latex_compile`.
+
+## Repositorio
+
+[github.com/FunshiEngine/FunshiEngineAI](https://github.com/FunshiEngine/FunshiEngineAI) ·
+Licencia Apache 2.0.

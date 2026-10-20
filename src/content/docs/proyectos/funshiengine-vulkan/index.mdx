@@ -1,0 +1,77 @@
+---
+titulo: FunshiEngineVK
+descripcion: "El backend de Vulkan del motor: shaders GLSL 450 compilados a SPIR-V en build, capa propia de interfaz y test headless."
+seccion: Proyectos
+proyecto: funshiengine-vulkan
+orden: 3
+---
+
+`FunshiEngineVK` implementa el **backend de Vulkan** del contrato de render. El
+motor —que viene del [núcleo](/docs/proyectos/funshiengine-core/)— define qué
+recursos, estados y uniformes necesita, y aquí está la implementación que los
+resuelve sobre Vulkan.
+
+El motor no habla el dialecto de ninguna API: pide un programa por tipo y el
+backend lo construye con el suyo. Este repositorio es la prueba de que ese
+contrato aguanta el cambio.
+
+## Shaders
+
+Los shaders se escriben en **GLSL 450** y se compilan a **SPIR-V en tiempo de
+build**, con `glslc` (del Vulkan SDK) o `glslangValidator`. El resultado queda
+**embebido en el ejecutable**: en runtime no hace falta compilador ni leer
+archivos.
+
+```bash
+cmake -S FunshiEngineGL -B FunshiEngineGL/build \
+    -DCMAKE_BUILD_TYPE=Release -DENABLE_ASAN=OFF -DFUNSHI_JAVA=ON
+cmake --build FunshiEngineGL/build -j$(nproc)
+cd FunshiEngineGL && ./build/FunshiEngineVK
+```
+
+> La lista de shaders se pasa al script de generación en un archivo, con una
+> ruta por línea, en lugar de un argumento con `;` separados: el shell de Linux
+> parte ese argumento en varios comandos y el build falla.
+
+## La interfaz
+
+ImGui se dibuja sobre Vulkan en una **pasada propia de una sola muestra**,
+resuelta contra la imagen del swapchain. El pipeline de la interfaz no lleva
+estado de profundidad y no puede participar en la pasada de la escena.
+
+El backend arranca el motor **sin contexto gráfico** (`GLFW_NO_API`): la
+superficie y el swapchain los crea el backend.
+
+## La prueba
+
+Hay un test *headless* que **dibuja un triángulo y lee los píxeles**. Es la
+comprobación de que el backend realmente dibuja, no solo de que enlaza.
+
+En la CI corre en Ubuntu, donde el runner no tiene GPU: la suite se salta
+(código 77) en lugar de fingir que pasó.
+
+## Varios GPUs
+
+```bash
+FUNSHI_VULKAN_GPU=1 ./build/FunshiEngineVK
+```
+
+La variable fuerza una GPU concreta de la lista que reporta Vulkan (0 es la
+primera). Es una ayuda para las máquinas con varias tarjetas o con un driver
+que no funciona: sin ella se usa la primera que tenga cola gráfica y pueda
+presentar en la pantalla.
+
+## Limitaciones conocidas
+
+- **La librería de Vulkan se enlaza**, no se carga en tiempo de ejecución: el
+  proceso necesita la librería instalada para arrancar.
+- **La interfaz no tiene suavizado**: la escena se dibuja con multisample de 4
+  muestras y se resuelve contra la imagen del swapchain, pero la interfaz se
+  dibuja después, en una pasada de una sola muestra.
+- El backend se puede dejar de compilar con `-DFUNSHI_VULKAN=OFF`; el motor
+  arranca entonces sin dibujar.
+
+## Repositorio
+
+[github.com/FunshiEngine/FunshiEngineVulkan](https://github.com/FunshiEngine/FunshiEngineVulkan) ·
+Licencia Apache 2.0.

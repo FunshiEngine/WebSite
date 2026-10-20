@@ -1,0 +1,75 @@
+---
+titulo: FunshiEngineCore
+descripcion: "El núcleo del motor: el contrato de render, la lógica de escena, la física, el audio y los scripts, sin depender de ninguna API gráfica."
+seccion: Proyectos
+proyecto: funshiengine-core
+orden: 1
+---
+
+`FunshiEngineCore` es el **núcleo del motor**. Define el contrato de render —qué
+recursos, estados y uniformes necesita el motor— y deja la implementación
+gráfica en manos de un backend.
+
+Por defecto el motor **arranca con el backend en blanco**: define el contrato y
+no dibuja. Un backend de verdad se instala antes de arrancar el bucle.
+
+## Qué hay dentro
+
+- **Ventana y eventos con GLFW, sin contexto gráfico.** La superficie la crea
+  el backend que se instale.
+- **Renderizado con un único pipeline moderno**, resuelto por un backend
+  intercambiable: los modelos usan `MeshRenderer` (malla en GPU más shaders) y
+  las líneas un batch en GPU con shader de ancho en píxeles. No queda modo
+  inmediato ni estado fijo.
+- **Jerarquía de entidades** con árboles enlazados propios, sobre
+  `GameObject` y componentes.
+- **Física con Bullet** detrás de una fachada desacoplada
+  (`IPhysicsBackend`), con registro central de cuerpos rígidos.
+- **Carga de modelos con Assimp** y caché compartida de assets por *flyweight*.
+- **Serialización binaria de escenas** en preorden, con la jerarquía completa.
+- **`EventBus` tipado** para notificaciones entre subsistemas, con tokens de
+  suscripción.
+- **Scripts dinámicos** en C++ y Java, con reflexión tipo `SerializeField`,
+  recarga en caliente y `IScriptBehaviour` como contrato común.
+- **Terminal integrada**: ConPTY en Windows, pseudo-terminal en POSIX, con un
+  emulador de terminal VT propio.
+- **Vista web embebida** con su propio contrato de backend y un backend nulo
+  para las pruebas *headless*.
+
+## El contrato de render
+
+`IRenderBackend` es el corazón del diseño. El motor pide:
+
+- **recursos**: mallas, texturas 2D, cubemaps, programas de shader;
+- **estados**: DepthFunc, buffers, blend, sombras;
+- **objetivos**: render targets, objetivos de profundidad del mapa de sombras;
+- **uniformes**: matrices y vectores por nombre.
+
+El backend responde con *handles opacos*. El motor **nunca ve un objeto de
+OpenGL ni de Vulkan**: ve identificadores que él mismo emite y que el backend
+traduce. Esa es la frontera que permite mantener dos backends sin duplicar el
+motor.
+
+## Compilación
+
+```bash
+cmake -S FunshiEngineGL -B FunshiEngineGL/build \
+    -DCMAKE_BUILD_TYPE=Release -DENABLE_ASAN=OFF -DFUNSHI_JAVA=ON
+cmake --build FunshiEngineGL/build -j$(nproc)
+```
+
+La estructura de carpetas del proyecto de CMake sigue siendo `FunshiEngineGL/`,
+aunque el producto se llame de otra forma: las rutas de assets apuntan ahí y
+cambiarlas sería más caro que el beneficio.
+
+## En el resto de la organización
+
+- `FunshiEngineOpenGL` implementa este contrato sobre **OpenGL 3.3 Core**.
+- `FunshiEngineVulkan` lo implementa sobre **Vulkan**.
+- `FunshiEngineCLI` consume el núcleo para operar proyectos, escenas y assets
+  sin abrir el editor.
+
+## Repositorio
+
+[github.com/FunshiEngine/FunshiEngineCore](https://github.com/FunshiEngine/FunshiEngineCore) ·
+Licencia Apache 2.0.

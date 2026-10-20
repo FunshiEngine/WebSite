@@ -1,0 +1,52 @@
+---
+import '@fontsource-variable/inter';
+import '@fontsource-variable/newsreader';
+import '@fontsource-variable/jetbrains-mono';
+
+import '../styles/tokens.css';
+import '../styles/global.css';
+
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+interface Props {
+  titulo?: string;
+  descripcion?: string;
+  imagen?: string;
+  tipo?: 'website' | 'article';
+}
+
+const { titulo, descripcion, imagen, tipo } = Astro.props;
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <BaseHead titulo={titulo} descripcion={descripcion} imagen={imagen} tipo={tipo} />
+    <script is:inline>
+      // Se aplica el tema antes de pintar para evitar el parpadeo inicial.
+      (function () {
+        try {
+          var guardado = localStorage.getItem('funshi-tema');
+          var preferencia = window.matchMedia('(prefers-color-scheme: light)').matches
+            ? 'light'
+            : 'dark';
+          var tema = guardado === 'light' || guardado === 'dark' ? guardado : preferencia;
+          document.documentElement.dataset.theme = tema;
+          document.documentElement.style.colorScheme = tema;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'dark';
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#contenido">Saltar al contenido</a>
+    <Header />
+    <main id="contenido">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

@@ -1,0 +1,101 @@
+---
+import DocLayout from '../../layouts/DocLayout.astro';
+import { obtenerDocs, rutaDoc } from '../../lib/docs';
+import { render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const docs = await obtenerDocs();
+  return docs.map((doc) => ({
+    params: { id: doc.id },
+    props: { doc },
+  }));
+}
+
+const { doc } = Astro.props;
+const { Content, headings } = await render(doc);
+
+// Navegacion anterior/siguiente dentro de la misma seccion.
+const todos = await obtenerDocs();
+const enSeccion = todos.filter((d) => d.data.seccion === doc.data.seccion);
+const indice = enSeccion.findIndex((d) => d.id === doc.id);
+const anterior = indice > 0 ? enSeccion[indice - 1] : undefined;
+const siguiente = indice >= 0 && indice < enSeccion.length - 1 ? enSeccion[indice + 1] : undefined;
+---
+
+<DocLayout
+  titulo={doc.data.titulo}
+  descripcion={doc.data.descripcion}
+  seccion={doc.id.split('/')[0]}
+  activo={doc.id}
+  headings={headings}
+>
+  <Content />
+
+  <nav class="vecinos" aria-label="Paginas vecinas">
+    {
+      anterior && (
+        <a class="vecino" href={rutaDoc(anterior.id)} rel="prev">
+          <span class="vecino__etiqueta">Anterior</span>
+          <span class="vecino__titulo">{anterior.data.titulo}</span>
+        </a>
+      )
+    }
+    {
+      siguiente && (
+        <a class="vecino vecino--derecha" href={rutaDoc(siguiente.id)} rel="next">
+          <span class="vecino__etiqueta">Siguiente</span>
+          <span class="vecino__titulo">{siguiente.data.titulo}</span>
+        </a>
+      )
+    }
+  </nav>
+</DocLayout>
+
+<style>
+  .vecinos {
+    display: grid;
+    gap: var(--space-3);
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    margin-block-start: var(--space-9);
+    padding-block-start: var(--space-6);
+    border-block-start: var(--border-width) solid var(--border-subtle);
+  }
+
+  .vecino {
+    display: grid;
+    gap: var(--space-1);
+    padding: var(--space-4);
+    border-radius: var(--radius-md);
+    border: var(--border-width) solid var(--border);
+    background: var(--surface);
+    transition:
+      border-color var(--duration-fast) var(--ease-out),
+      background-color var(--duration-fast) var(--ease-out);
+  }
+
+  .vecino:hover {
+    border-color: var(--accent-line);
+    background: var(--surface-raised);
+  }
+
+  .vecino--derecha {
+    text-align: right;
+  }
+
+  .vecino__etiqueta {
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    letter-spacing: var(--tracking-widest);
+    text-transform: uppercase;
+    color: var(--text-subtle);
+  }
+
+  .vecino__titulo {
+    font-weight: 550;
+    font-size: var(--text-base);
+  }
+
+  .vecino:hover .vecino__titulo {
+    color: var(--accent);
+  }
+</style>

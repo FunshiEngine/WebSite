@@ -1,0 +1,92 @@
+---
+/**
+ * Cabecera de las paginas interiores: etiqueta superior, titulo, entradilla
+ * y un hueco opcional para acciones.
+ */
+import { ruta } from '../lib/site';
+
+interface Props {
+  /** Etiqueta superior (por ejemplo, "Proyecto" o "Documentacion"). */
+  eyebrow?: string;
+  titulo: string;
+  lede?: string;
+  /** Texto del enlace de vuelta, si lo hay. */
+  volver?: { texto: string; href: string };
+}
+
+const { eyebrow, titulo, lede, volver } = Astro.props;
+---
+
+<header class="cabecera-pagina">
+  <div class="container">
+    {
+      volver && (
+        <a class="cabecera-pagina__volver" href={ruta(volver.href)}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path
+              d="M19 12H6m0 0 5.5-5.5M6 12l5.5 5.5"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            ></path>
+          </svg>
+          {volver.texto}
+        </a>
+      )
+    }
+
+    {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+    <h1 class="cabecera-pagina__titulo">{titulo}</h1>
+    {lede && <p class="cabecera-pagina__lede">{lede}</p>}
+
+    <div class="cabecera-pagina__acciones">
+      <slot />
+    </div>
+  </div>
+</header>
+
+<style>
+  .cabecera-pagina {
+    padding-block: var(--space-8) var(--space-7);
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .cabecera-pagina__volver {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    width: fit-content;
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+    transition: color var(--duration-fast) var(--ease-out);
+  }
+
+  .cabecera-pagina__volver:hover {
+    color: var(--accent);
+  }
+
+  .cabecera-pagina__titulo {
+    font-size: var(--text-3xl);
+    max-width: 22ch;
+  }
+
+  .cabecera-pagina__lede {
+    color: var(--text-muted);
+    font-size: var(--text-lg);
+    max-width: 62ch;
+    line-height: var(--leading-snug);
+  }
+
+  .cabecera-pagina__acciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-block-start: var(--space-2);
+  }
+
+  .cabecera-pagina__acciones:empty {
+    display: none;
+  }
+</style>

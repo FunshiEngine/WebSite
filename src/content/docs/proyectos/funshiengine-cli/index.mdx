@@ -1,0 +1,125 @@
+---
+titulo: FunshiEngineCLI
+descripcion: "La interfaz de línea de comandos del motor: solicitudes JSON por stdin y stdout, y una TUI de terminal con caja de comandos."
+seccion: Proyectos
+proyecto: funshiengine-cli
+orden: 4
+---
+
+`FunshiEngineCLI` es la **interfaz de línea de comandos** del motor. Ejecuta
+operaciones del motor mediante solicitudes JSON sin abrir el editor gráfico:
+creación y gestión de proyectos, escenas y objetos, importación de assets,
+compilación de scripts y consulta del registro de diagnósticos.
+
+El código está modularizado en un **núcleo reutilizable agnóstico del
+transporte** (`src/Nucleo`), preparado para que una futura app de escritorio
+reutilice la misma lógica sin pasar por stdin/stdout.
+
+## La regla del núcleo
+
+> El núcleo no toca `stdout` ni `argv`.
+
+`ejecutarSolicitud()` no imprime nada: devuelve un `ResultadoComando`, que es
+una respuesta más el código de salida. El front-end decide cómo presentarlo. Es
+lo que permite que la TUI y el camino JSON compartan exactamente la misma
+lógica.
+
+## Las dos formas de usarlo
+
+```bash
+FunshiCLI --request < solicitud.json       # una solicitud por stdin
+FunshiCLI --request-file solicitud.json    # una solicitud de un archivo
+FunshiCLI --tui                            # interfaz de terminal
+FunshiCLI help
+FunshiCLI version
+```
+
+### La forma de una solicitud
+
+```json
+{ "command": "project.create", "args": { "name": "MiJuego2D", "dimension": 2 } }
+```
+
+Y la forma de la respuesta:
+
+```json
+{
+  "apiVersion": 1,
+  "ok": true,
+  "error": null,
+  "result": { "dimension": 2, "name": "MiJuego2D", "path": "..." }
+}
+```
+
+Cuando algo falla, `ok` es `false` y `error` trae el error **tipado**: el
+mismo objeto que quedó guardado en el historial de diagnósticos.
+
+### La TUI
+
+`--tui` abre una interfaz interactiva de terminal con cinco piezas: barra
+superior, panel lateral de dominios, panel central con los datos reales del
+núcleo, caja de comandos y barra de estado.
+
+- La caja de comandos escribe en la **misma sintaxis JSON** del protocolo
+  (`nombre=valor`), de modo que lo que se teclea se puede copiar a un script.
+- `?` abre el catálogo de comandos.
+- Las teclas de página, inicio y fin recorren el panel central; el scroll es
+  propio, no del framework, y la cabecera muestra `N-M de total`.
+
+La TUI necesita una terminal interactiva. Sin ella responde
+`tui_terminal_unavailable` y sale con código 2. En Windows, el módulo
+`EntradaRespaldo` cubre las terminales sin consola nativa (pty de MSYS2, Git
+Bash) aplicando modo crudo con `stty` y traduciendo los bytes con el parser
+interno de FTXUI, de modo que ambas rutas producen los mismos eventos.
+
+## Arquitectura por capas
+
+```text
+src/
+├── main.cpp        # argv + lectura de la solicitud + escritura a stdout
+├── Nucleo/         # lógica central: Solicitud, Respuesta, catálogo, dispatch
+├── Validacion/     # validación de argumentos por tabla de requisitos
+├── Proyectos/      # resolución y validación de rutas de proyecto
+├── Escena/         # contexto de escena (RAII) y serialización a JSON
+├── Comandos/       # un módulo por dominio de comando
+└── Tui/            # interfaz interactiva de terminal
+```
+
+## Compilación
+
+```bash
+git submodule update --init --recursive
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build -j$(nproc)
+```
+
+El ejecutable queda en `build/FunshiCLI` (Linux) o `build/FunshiCLI.exe`
+(Windows).
+
+> **El motor se compila desde el submódulo.** El CMake fija `BUILD_ENGINE=ON`
+> y añade el submódulo con `add_subdirectory`, así que las cabeceras con las que
+> compila la CLI y la biblioteca que enlaza salen **siempre del mismo commit**.
+> Enlazarlas desde builds distintos rompe el proceso: los structs que cruzan la
+> frontera tienen layouts distintos y corrompen la memoria al liberarse.
+
+## En Windows
+
+El build copia junto al ejecutable las DLLs de runtime que necesita: las del
+toolchain MinGW-w64, las del motor y las dependencias transitivas de Assimp.
+Así `build/FunshiCLI.exe` funciona desde cualquier terminal sin preparar el
+`PATH`.
+
+Si se copia el ejecutable a otra carpeta, hay que llevar también esas DLLs: sin
+ellas el proceso termina en el arranque sin imprimir nada, con el código
+`0xC0000135`.
+
+## Pruebas
+
+```bash
+cd build && ctest -R cli-tests --output-on-failure
+```
+
+## Repositorio
+
+[github.com/FunshiEngine/FunshiEngineCLI](https://github.com/FunshiEngine/FunshiEngineCLI) ·
+Licencia Apache 2.0.

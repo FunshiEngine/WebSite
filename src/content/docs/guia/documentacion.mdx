@@ -1,0 +1,97 @@
+---
+titulo: Documentación
+descripcion: Qué se documenta en la organización, dónde vive cada documento y cómo se mantiene al día.
+seccion: Guía
+orden: 5
+---
+
+La documentación de la organización es parte del producto: viaja con el código,
+en el mismo repositorio, y se actualiza en el mismo commit que el cambio que
+la motiva.
+
+## Los documentos de cada repositorio
+
+Cada repositorio tiene un conjunto propio y estable:
+
+| Documento | Qué contiene |
+|---|---|
+| `README.md` | La puerta de entrada: qué es, cómo se compila, cómo se ejecuta, qué documentación hay |
+| `PROJECT_STRUCTURE.md` | La arquitectura: qué módulos existen, cómo se relacionan, qué flujo sigue el programa |
+| `MANUAL_DE_USO.md` | El manual para quien usa la herramienta, no para quien la modifica |
+| `AGENTS.md` | Las convenciones para quien trabaja en el repositorio |
+| `DocuTecnicoBugs.md` | El registro técnico de los defectos encontrados y cómo se diagnosticaron |
+
+Ese último merece un párrafo aparte: **registrar los fallos debugueados es
+parte del trabajo**. Cuando un defecto consume horas, la causa y el camino para
+detectarlo se escriben, para que la próxima persona no repita el mismo camino.
+
+## Los dos lectores
+
+La documentación escribe para dos audiences distintos, y no es lo mismo:
+
+- **El manual de uso** escribe para quien va a **usar** la herramienta. Es una
+  guía: pasos, ejemplos, recetas. No habla de clases ni de archivos internos.
+- **La estructura del proyecto** escribe para quien va a **modificar** la
+  herramienta. Es una descripción: módulos, responsabilidades, flujo de
+  ejecución y decisiones de diseño.
+
+Mezclarlos es el error más común: un manual lleno de nombres de clases es
+inutilizable para un usuario, y una descripción de arquitectura sin ejemplos es
+inutilizable para quien implementa.
+
+## Este sitio
+
+La documentación de la organización vive además en este sitio, que es la forma
+en que se lee desde fuera:
+
+- **`src/content/docs/`** — las páginas, en Markdown con MDX.
+- **`src/content/proyectos/`** — la ficha de cada repositorio: nombre, lema,
+  estado, tecnologías y enlaces.
+
+El sitio se genera con Astro: cada página es un archivo y la salida es HTML
+estático. Para escribir una página nueva se añade el archivo en la carpeta
+correcta, con su bloque de metadatos, y ya aparece en el índice y en la
+navegación lateral.
+
+### Los metadatos de una página
+
+```yaml
+---
+titulo: Título de la página
+descripcion: Resumen de una línea.
+seccion: Guía            # la sección en la que aparece
+orden: 3                 # posición dentro de la sección
+proyecto: funshiengine-cli   # opcional: proyecto al que pertenece
+destacado: false         # opcional: aparece en la portada del sitio
+---
+```
+
+### Los metadatos de una ficha de proyecto
+
+```yaml
+---
+clave: funshiengine-cli
+nombre: FunshiEngineCLI
+lema: El motor desde la terminal: JSON en stdin, JSON en stdout
+rol: Herramienta
+estado: activo
+stack: [C++17, CMake, nlohmann/json, FTXUI]
+repositorio: https://github.com/FunshiEngine/FunshiEngineCLI
+licencia: Apache-2.0
+color: '#6fbf9b'
+orden: 4
+aspectos:
+  - 18 comandos: proyectos, escenas, objetos, assets, scripts y diagnósticos.
+---
+```
+
+## Reglas de escritura
+
+- **Una idea por párrafo.** Si un párrafo necesita dos títulos, son dos páginas.
+- **El ejemplo manda.** Un fragmento de JSON o de terminal vale más que tres
+  párrafos describiéndolo.
+- **Sin afirmaciones que no se puedan comprobar.** Si no está medido, no se
+  escribe como si lo estuviera.
+- **El texto técnico describe técnicas, no gestión.** Nada de identificadores
+  de tareas, fases ni estados: eso vive en los issues y en los commits.
+- **El idioma es el español**, con las mismas convenciones que el código.

@@ -1,0 +1,39 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import { obtenerProyectos } from '../../lib/proyectos';
+
+const proyectos = await obtenerProyectos();
+---
+
+<BaseLayout
+  titulo="Proyectos"
+  descripcion="Los repositorios de la organizacion FunshiEngine: el core del motor, sus backends de render, la interfaz de linea de comandos y las herramientas de asistencia con IA."
+>
+  <PageHeader
+    eyebrow="Proyectos"
+    titulo="Seis repositorios, una sola idea"
+    lede="Cada proyecto resuelve una parte del problema y se puede usar por separado. Todos comparten el mismo contrato, las mismas convenciones y la misma documentacion."
+  />
+
+  <section class="seccion">
+    <div class="container">
+      <div class="rejilla">
+        {proyectos.map((proyecto) => <ProjectCard proyecto={proyecto} detallado />)}
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .seccion {
+    padding-block: var(--space-4) var(--space-10);
+  }
+
+  .rejilla {
+    display: grid;
+    gap: var(--space-4);
+    grid-template-columns: repeat(auto-fill, minmax(19rem, 1fr));
+  }
+</style>

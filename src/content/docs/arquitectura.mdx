@@ -1,0 +1,127 @@
+---
+titulo: Arquitectura de la organización
+descripcion: Cómo se relacionan el núcleo del motor, sus backends de render y los frentes de uso que la organización mantiene.
+seccion: Arquitectura
+orden: 1
+destacado: true
+---
+
+La organización mantiene seis repositorios, pero el motor tiene una sola
+estructura: un **núcleo sin API gráfica**, un **contrato de render** y un
+conjunto de **backends** que lo implementan. Todo lo demás —la terminal, el
+asistente, el agente— es un frente que consume el núcleo.
+
+## La regla que ordena todo
+
+> El motor no habla el dialecto de ninguna API gráfica. Pide un programa por
+> tipo y el backend lo construye con el suyo.
+
+De esa regla salen tres consecuencias prácticas.
+
+### 1. El núcleo no sabe qué hay debajo
+
+`FunshiEngineCore` define **qué** necesita el motor: mallas, texturas, estados,
+objetivos de render y uniformes. No define **cómo** se dibuja. Por defecto el
+motor arranca con el backend en blanco: define el contrato y no dibuja. Un
+backend de verdad se instala antes de arrancar el bucle.
+
+Esto tiene un coste evidente —hay que escribir un contrato que sea bueno para
+Vulkan y para OpenGL— y una ventaja mayor: el motor se puede probar sin GPU, y
+la lógica de escena, física, scripts y serialización se puede ejercitar igual
+con cualquier backend.
+
+### 2. Los backends no tocan la lógica del motor
+
+`FunshiEngineOpenGL` y `FunshiEngineVulkan` implementan el contrato. Cada uno
+traduce las peticiones del motor a su API:
+
+| | OpenGL | Vulkan |
+|---|---|---|
+| Lenguaje de shaders | GLSL 3.3 | GLSL 450 |
+| Compilación | en runtime | a SPIR-V en tiempo de build |
+| Superficie | GLFW con contexto | GLFW sin contexto (`GLFW_NO_API`) |
+
+El backend de Vulkan compila sus shaders a SPIR-V **durante el build** y los
+embebe en el ejecutable: en runtime no hace falta compilador ni leer archivos.
+
+### 3. Los frentes de uso dependen del núcleo, no de un backend
+
+Esta es la consecuencia que habilita el resto de la organización:
+
+```text
+                ┌──────────────────────────────────────────┐
+                │ .Frentes de uso                          │
+                │  Editor GL · Editor VK · CLI · AI · Silvy│
+                └────────────────────┬─────────────────────┘
+                                     │ depende de
+                ┌────────────────────▼─────────────────────┐
+                │  FunshiEngineCore                        │
+                │  contrato de render + lógica del motor   │
+                └────────────────────┬─────────────────────┘
+                                     │ implementan
+                ┌────────────────────▼─────────────────────┐
+                │  Backends: OpenGL 3.3 · Vulkan           │
+                └──────────────────────────────────────────┘
+```
+
+La CLI, el asistente y el agente pueden trabajar con proyectos, escenas,
+assets y scripts **sin dibujar nada**. Por eso la terminal del motor es una
+herramienta de primera clase y no un apaño.
+
+## Un contrato, dos consecuencias prácticas
+
+### La CLI puede automatizar el motor
+
+El editor expone sus mutaciones de escena como comandos (`IComando`): crear,
+borrar, reparentar, mover, agregar y quitar componentes, limpiar la escena.
+Esa misma capa la consume la terminal, de modo que **cada acción del editor
+tiene un equivalente invocable sin GUI**.
+
+### El núcleo se puede reusar en otro lenguaje
+
+`FunshiEngineCLI` y `Silvy` no son un caso particular: son la prueba de que la
+frontera entre el núcleo y el transporte está bien puesta. El núcleo no toca
+`stdout` ni `argv`; devuelve un resultado y quien lo llama decide cómo
+mostrarlo.
+
+## La capa de datos y la de contratos
+
+El motor separa tres cosas que suelen mezclarse:
+
+- **Los datos**: `GameObject`, componentes, escenas. Se serializan en binario,
+  en preorden, con la jerarquía completa.
+- **Los contratos**: `IRenderBackend`, `IPhysicsBackend`, `IAudioBackend` y los
+  backends de scripts. Son interfaces, no implementaciones.
+- **Las implementaciones**: Bullet, Assimp, miniaudio, GLFW, Dear ImGui y los
+  backends concretos de render.
+
+Un módulo que depende solo de los contratos se puede probar sin la
+implementación. Por eso existen las suites *headless*: prueban física,
+audio, serialización, terminal y web sin GPU.
+
+## Una organización, no un monolito
+
+Los repositorios se separan por **responsabilidad y ritmo de cambio**, no por
+capas técnicas:
+
+| Repositorio | Responsabilidad | Cambia cuando… |
+|---|---|---|
+| `FunshiEngineCore` | El contrato de render y la lógica del motor | Cambia la forma del motor |
+| `FunshiEngineOpenGL` | El motor resuelto sobre OpenGL | Cambia OpenGL o el pipeline |
+| `FunshiEngineVulkan` | El backend de Vulkan | Cambia Vulkan o la validación |
+| `FunshiEngineCLI` | El frente de línea de comandos | Cambia el protocolo o los comandos |
+| `FunshiEngineAI` | El asistente de escritorio | Cambia el RAG o la interfaz |
+| `Silvy` | El agente que habla con el LLM | Cambia el runtime del LLM |
+
+El núcleo se consume como **submódulo**: las cabeceras con las que compila la
+CLI y la biblioteca que enlaza salen siempre del mismo commit. Enlazarlas desde
+builds distintos rompe el proceso, porque los structs que cruzan la frontera
+tienen layouts distintos y corrompen la memoria al liberarse. Es una leccion
+claramente aprendida, y la regla esta escrita en los repositorios para que no
+se repita.
+
+## Donde seguir
+
+- [Guía de primeros pasos](/docs/guia/inicio/) — como compilar y ejecutar cada proyecto.
+- [Documentación de los proyectos](/docs/proyectos/) — el detalle de cada repositorio.
+- [Estilo de código](/docs/guia/estilo-de-codigo/) — las convenciones que se comparten.

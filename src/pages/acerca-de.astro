@@ -1,0 +1,187 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import Boton from '../components/Boton.astro';
+import { SITE, ruta } from '../lib/site';
+import { obtenerProyectos } from '../lib/proyectos';
+
+const proyectos = await obtenerProyectos();
+---
+
+<BaseLayout
+  titulo="Acerca de"
+  descripcion="Que es la organizacion FunshiEngine, como esta construida y como contribuir a sus proyectos."
+>
+  <PageHeader
+    eyebrow="Acerca de"
+    titulo="Una organización pequeña con una idea clara"
+    lede="FunshiEngine desarrolla un motor de juegos en tiempo real y las herramientas que lo vuelven manejable: una terminal, un asistente y un agente."
+  />
+
+  <div class="contenido container container--prose">
+    <section class="bloque">
+      <h2>Que hacemos</h2>
+      <p>
+        La organizacion mantiene seis repositorios alrededor de una misma idea: un
+        motor de juegos escrito en C++17 cuyo nucleo no depende de ninguna API
+        grafica. El motor define un <strong>contrato de render</strong> —que recursos,
+        estados y uniformes necesita— y cada backend lo implementa con su dialecto.
+      </p>
+      <p>
+        Alrededor del motor hay un editor completo, una interfaz de linea de comandos
+        que habla JSON, un asistente de escritorio con recuperacion augmentada y un
+        agente de codigo que opera sobre el motor. Todo se apoya en la misma
+        documentacion y en las mismas convenciones.
+      </p>
+    </section>
+
+    <section class="bloque">
+      <h2>Como esta organizado</h2>
+      <p>
+        Cada repositorio tiene una responsabilidad y una regla de dependencia clara:
+      </p>
+      <ul>
+        <li>
+          <strong>El nucleo no depende de nadie.</strong> Define los contratos y la
+          logica del motor; no sabe que API grafica hay debajo.
+        </li>
+        <li>
+          <strong>Los backends dependen del nucleo.</strong> Traducen el contrato a su
+          API y no tocan la logica del motor.
+        </li>
+        <li>
+          <strong>Los frentes dependen del nucleo, no de un backend.</strong> La
+          terminal, el asistente y el agente pueden trabajar con el motor sin
+          dibujar nada.
+        </li>
+      </ul>
+    </section>
+
+    <section class="bloque">
+      <h2>Los proyectos</h2>
+      <ul class="proyectos">
+        {
+          proyectos.map((proyecto) => (
+            <li>
+              <a href={ruta(`/proyectos/${proyecto.data.clave}/`)}>
+                <span class="proyectos__nombre">{proyecto.data.nombre}</span>
+                <span class="proyectos__lema">{proyecto.data.lema}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section class="bloque">
+      <h2>Como trabajamos</h2>
+      <p>
+        Las convenciones estan escritas y se aplican en todos los repositorios:
+        codigo, comentarios y documentacion en español, licencia Apache 2.0, commits
+        atomicos y convencionales, y documentacion sincronizada con el codigo que
+        describe.
+      </p>
+      <p>
+        La guia completa esta en la <a href={ruta('/docs/guia/estilo-de-codigo/')}>documentacion
+        de estilo</a> y en la de <a href={ruta('/docs/guia/ramas-y-commits/')}>ramas y commits</a>.
+      </p>
+    </section>
+
+    <section class="bloque">
+      <h2>Licencia</h2>
+      <p>
+        El codigo y la documentacion de los proyectos de la organizacion se publican
+        bajo la licencia <strong>Apache 2.0</strong>. Puede usarse, modificarse y
+        distribuirse, incluidos los usos comerciales, citando la licencia.
+      </p>
+    </section>
+
+    <section class="bloque bloque--cierre">
+      <h2>Empezar</h2>
+      <p>La via mas corta para entender el conjunto es la guia de primeros pasos.</p>
+      <p class="acciones">
+        <Boton href={ruta('/docs/guia/inicio/')}>Leer la guia</Boton>
+        <Boton variante="secundario" href={SITE.repositorio} externo>Ver en GitHub</Boton>
+      </p>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .contenido {
+    display: grid;
+    gap: var(--space-8);
+    padding-block: var(--space-4) var(--space-10);
+  }
+
+  .bloque {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .bloque h2 {
+    font-size: var(--text-xl);
+  }
+
+  .bloque p,
+  .bloque li {
+    color: var(--text-muted);
+  }
+
+  .bloque strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .bloque a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .bloque ul {
+    display: grid;
+    gap: var(--space-3);
+    padding-inline-start: var(--space-5);
+  }
+
+  .proyectos {
+    list-style: none;
+    padding: 0 !important;
+  }
+
+  .proyectos a {
+    display: grid;
+    gap: var(--space-1);
+    padding: var(--space-3) var(--space-4);
+    margin-inline: calc(var(--space-4) * -1);
+    border-radius: var(--radius-md);
+    border: var(--border-width) solid transparent;
+    text-decoration: none !important;
+    transition:
+      background-color var(--duration-fast) var(--ease-out),
+      border-color var(--duration-fast) var(--ease-out);
+  }
+
+  .proyectos a:hover {
+    background: var(--surface);
+    border-color: var(--border);
+  }
+
+  .proyectos__nombre {
+    color: var(--text);
+    font-weight: 550;
+  }
+
+  .proyectos__lema {
+    color: var(--text-muted);
+    font-size: var(--text-sm);
+  }
+
+  .acciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-block-start: var(--space-2);
+  }
+</style>

@@ -1,0 +1,55 @@
+---
+/**
+ * Etiqueta compacta para estados, linguajes o metadatos.
+ */
+interface Props {
+  /** Contenido de la etiqueta. */
+  texto: string;
+  /** Variante visual. */
+  variante?: 'neutro' | 'acento' | 'contorno';
+  /** Punto de color a la izquierda. */
+  conPunto?: boolean;
+}
+
+const { texto, variante = 'neutro', conPunto = false } = Astro.props;
+---
+
+<span class:list={['etiqueta', `etiqueta--${variante}`]}>
+  {conPunto && <span class="etiqueta__punto" aria-hidden="true"></span>}
+  {texto}
+</span>
+
+<style>
+  .etiqueta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 0.2rem 0.55rem;
+    border-radius: var(--radius-pill);
+    border: var(--border-width) solid var(--border);
+    background: var(--surface-inset);
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    font-weight: 500;
+    letter-spacing: var(--tracking-wide);
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  .etiqueta--acento {
+    color: var(--accent);
+    background: var(--accent-soft);
+    border-color: var(--accent-line);
+  }
+
+  .etiqueta--contorno {
+    background: transparent;
+  }
+
+  .etiqueta__punto {
+    width: 0.4rem;
+    height: 0.4rem;
+    border-radius: 50%;
+    background: currentColor;
+  }
+</style>

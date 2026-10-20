@@ -1,0 +1,69 @@
+---
+/**
+ * Marca de la organizacion: un hexagono (la forma isometrica del motor)
+ * con una flecha que apunta hacia arriba y a la derecha (la direccion del
+ * proyecto). Se dibuja solo con `currentColor` para funcionar en cualquier
+ * tema y a cualquier tamano.
+ */
+interface Props {
+  /** Tamano del lado del icono, en pixels. */
+  tamano?: number;
+  /** Ocultar el texto y dejar solo el icono. */
+  soloIcono?: boolean;
+}
+
+const { tamano = 28, soloIcono = false } = Astro.props;
+---
+
+<span class="marca">
+  <svg
+    class="marca__icono"
+    width={tamano}
+    height={tamano}
+    viewBox="0 0 32 32"
+    fill="none"
+    aria-hidden="true"
+    focusable="false"
+  >
+    <path
+      d="M16 2.5 28 9v14L16 29.5 4 23V9z"
+      stroke="currentColor"
+      stroke-width="1.75"
+      stroke-linejoin="round"
+      opacity="0.42"></path>
+    <path
+      d="M11 20.5 16 11l5 9.5"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"></path>
+    <path d="M12.8 17.4h6.4" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+  </svg>
+  {!soloIcono && <span class="marca__texto">Funshi<span class="marca__texto-acento">Engine</span></span>}
+</span>
+
+<style>
+  .marca {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: var(--text);
+  }
+
+  .marca__icono {
+    color: var(--accent);
+    flex: none;
+  }
+
+  .marca__texto {
+    font-weight: 600;
+    font-size: var(--text-md);
+    letter-spacing: var(--tracking-tight);
+    white-space: nowrap;
+  }
+
+  .marca__texto-acento {
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+</style>

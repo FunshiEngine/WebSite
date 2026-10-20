@@ -1,0 +1,108 @@
+---
+titulo: Catálogo de comandos
+descripcion: Los 18 comandos de la CLI del motor, sus argumentos, sus resultados y los códigos de salida.
+seccion: Proyectos
+proyecto: funshiengine-cli
+orden: 5
+---
+
+El catálogo de comandos es **cerrado**: cada comando es un valor de un
+`enum class` y el despachador usa un `switch` exhaustivo, de modo que el
+compilador avisa al agregar un valor sin cubrir.
+
+## Los comandos
+
+| `command` | Argumentos | Resultado |
+|---|---|---|
+| `help` | ninguno | Lista los comandos disponibles. |
+| `version` | ninguno | Devuelve la versión de la CLI. |
+| `project.create` | `args.name` (string), `args.dimension` (opcional: `2`/`3` o `"2d"`/`"3d"`/`"DosD"`/`"TresD"`; por defecto `3`) | Crea el proyecto y devuelve su nombre, ruta y dimensión. |
+| `project.list` | ninguno | Lista los proyectos descubiertos con su dimensión y validez. |
+| `project.config.get` | `args.project` (requerido) | Devuelve la configuración persistida del proyecto. |
+| `project.src.create` | `args.project`, `args.path` (ruta relativa dentro de `src/`), `args.file` (opcional), `args.content` (opcional) | Crea un archivo (`file: true`) o un directorio dentro de `src<proyecto>/`. |
+| `project.dir.import` | `args.project`, `args.source` (ruta absoluta), `args.path` (ruta relativa de destino), `args.overwrite` (opcional) | Importa una carpeta completa de forma recursiva. |
+| `project.fs.create` | `args.project` (requerido), `args.name` | Crea un directorio dentro del vfs `<proyecto>/fs/`. |
+| `file.create` | `args.project` (requerido), `args.name`, `args.path` (opcional), `args.content` (opcional) | Crea un archivo dentro del vfs `<proyecto>/fs/`. |
+| `scene.list` | `args.project` (requerido) | Lista las escenas del proyecto (`.db` y `.txt`). |
+| `scene.objects` | `args.project` (requerido) | Devuelve la jerarquía completa de objetos con sus componentes. |
+| `scene.object.get` | `args.project` (requerido), `args.id` (int) **o** `args.tag` (string) | Obtiene un objeto por id o por tag, con búsqueda recursiva. |
+| `scene.hierarchy` | `args.project` (requerido) | Alias de `scene.objects`. |
+| `asset.import` | `args.project`, `args.source` (requeridos) | Importa un modelo, textura o audio y devuelve su ruta relativa y su tipo. |
+| `script.list` | `args.project` (requerido) | Lista los scripts del proyecto (`.cpp` y `.java`). |
+| `script.compile` | `args.project` (requerido) | Compila todos los scripts del proyecto, en C++ y en Java. |
+| `diagnostics.list` | `args.limit` (opcional, máximo 1000, por defecto 100) | Devuelve los últimos eventos del registro de diagnósticos. |
+| `diagnostics.clear` | ninguno | Borra el archivo de diagnósticos. |
+
+## Ejemplos
+
+### Crear un proyecto 2D
+
+```bash
+echo '{"command":"project.create","args":{"name":"MiJuego2D","dimension":2}}' \
+  | FunshiCLI --request
+```
+
+```json
+{"apiVersion":1,"error":null,"ok":true,"result":{"dimension":2,"name":"MiJuego2D","path":"..."}}
+```
+
+La dimensión acepta el entero `2` o `3`, o las cadenas `"2d"`, `"2D"`, `"DosD"`,
+`"3d"`, `"3D"` y `"TresD"`. El valor por defecto es `3`, para no romper los
+proyectos anteriores a que existiera el campo.
+
+### Importar un asset
+
+El tipo se detecta por extensión y el archivo se copia a la subcarpeta
+correspondiente dentro de `src<proyecto>/`:
+
+| Extensión | Tipo | Destino |
+|---|---|---|
+| `.obj`, `.fbx`, `.gltf`, `.glb`, `.dae`, `.blend` | model | `Modelos/` |
+| `.png`, `.jpg`, `.jpeg`, `.tga`, `.bmp`, `.hdr` | texture | `Texturas/` |
+| `.wav`, `.ogg`, `.mp3`, `.flac` | audio | `Sonidos/` |
+
+```bash
+echo '{"command":"asset.import","args":{"project":"MiProyecto","source":"/tmp/modelo.fbx"}}' \
+  | FunshiCLI --request
+```
+
+```json
+{"ok":true,"result":{"project":"MiProyecto","path":"Modelos/modelo.fbx","type":"model","exists":true}}
+```
+
+### Consultar una escena
+
+`scene.objects` devuelve la jerarquía recursiva de cada objeto con:
+
+- `id`, `name`, `tag`, `active`;
+- `transform` (posición, rotación y escala local);
+- `components`, con el `typeName` y las propiedades específicas de cada tipo;
+- `children`, de forma recursiva.
+
+### Consultar diagnósticos
+
+```bash
+echo '{"command":"diagnostics.list","args":{"limit":20}}' | FunshiCLI --request
+```
+
+El registro de diagnósticos es el mismo que consulta la interfaz del motor:
+comparten formato y archivo.
+
+## Códigos de salida
+
+| Código | Significado |
+|---|---|
+| `0` | La operación terminó correctamente. |
+| `1` | Fallo operacional: algo falló y se registró. |
+| `2` | Solicitud inválida: argumentos faltantes o mal formados, o uso incorrecto. |
+
+## Reproducir un fallo
+
+La respuesta de error trae **exactamente el objeto que quedó guardado** en el
+historial. Eso permite pegar la respuesta en una incidencia y reconstruir el
+caso sin tener el motor delante.
+
+## Repositorio
+
+[github.com/FunshiEngine/FunshiEngineCLI](https://github.com/FunshiEngine/FunshiEngineCLI) ·
+Documentación completa en `MANUAL_DE_USO.md`.

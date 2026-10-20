@@ -1,0 +1,90 @@
+---
+/**
+ * Boton de accion.
+ *
+ * Es un enlace con la apariencia de boton. Se usa como componente para que
+ * el estilo viva en un solo sitio: los estilos con alcance de Astro solo
+ * alcanzan a los elementos de la pagina que los define, y un boton
+ * estilizado desde la portada no llegaria a las paginas interiores.
+ */
+interface Props {
+  /** Destino del enlace. */
+  href: string;
+  /** Variante visual. */
+  variante?: 'primario' | 'secundario';
+  /** Abre el enlace en una pestana nueva. */
+  externo?: boolean;
+  /** Tamano reducido. */
+  pequeno?: boolean;
+}
+
+const { href, variante = 'primario', externo = false, pequeno = false } = Astro.props;
+---
+
+<a
+  class:list={['boton', `boton--${variante}`, { 'boton--pequeno': pequeno }]}
+  href={href}
+  target={externo ? '_blank' : undefined}
+  rel={externo ? 'noreferrer noopener' : undefined}
+>
+  <slot />
+</a>
+
+<style>
+  .boton {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 0.6rem 1.1rem;
+    border-radius: var(--radius-md);
+    font-size: var(--text-base);
+    font-weight: 550;
+    line-height: 1.35;
+    border: var(--border-width) solid transparent;
+    text-decoration: none;
+    white-space: nowrap;
+    transition:
+      background-color var(--duration-fast) var(--ease-out),
+      border-color var(--duration-fast) var(--ease-out),
+      color var(--duration-fast) var(--ease-out),
+      transform var(--duration-fast) var(--ease-out),
+      box-shadow var(--duration-fast) var(--ease-out);
+  }
+
+  .boton--pequeno {
+    padding: 0.4rem 0.8rem;
+    font-size: var(--text-sm);
+  }
+
+  .boton--primario {
+    background: var(--accent);
+    color: var(--accent-contrast);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .boton--primario:hover {
+    background: var(--accent-strong);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .boton--secundario {
+    border-color: var(--border-strong);
+    color: var(--text);
+    background: var(--surface-inset);
+  }
+
+  .boton--secundario:hover {
+    background: var(--surface-hover);
+    border-color: var(--text-subtle);
+  }
+
+  .boton :global(svg) {
+    flex: none;
+    transition: transform var(--duration-base) var(--ease-out);
+  }
+
+  .boton--primario:hover :global(svg) {
+    transform: translateX(3px);
+  }
+</style>

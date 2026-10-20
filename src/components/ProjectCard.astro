@@ -1,0 +1,189 @@
+---
+import Badge from './Badge.astro';
+import { ETIQUETAS_ESTADO, type Proyecto } from '../lib/proyectos';
+import { ruta } from '../lib/site';
+
+interface Props {
+  proyecto: Proyecto;
+  /** Mostrar la lista de aspectos destacados. */
+  detallado?: boolean;
+}
+
+const { proyecto, detallado = false } = Astro.props;
+const { data } = proyecto;
+---
+
+<article
+  class="tarjeta"
+  style={`--proyecto-color: ${data.color}`}
+>
+  <a class="tarjeta__enlace" href={ruta(`/proyectos/${data.clave}/`)}>
+    <header class="tarjeta__cabecera">
+      <span class="tarjeta__rol">{data.rol}</span>
+      <Badge texto={ETIQUETAS_ESTADO[data.estado]} variante="acento" conPunto />
+    </header>
+
+    <h3 class="tarjeta__titulo">{data.nombre}</h3>
+    <p class="tarjeta__lema">{data.lema}</p>
+
+    {
+      detallado && data.aspectos.length > 0 && (
+        <ul class="tarjeta__aspectos">
+          {data.aspectos.slice(0, 3).map((aspecto) => (
+            <li>{aspecto}</li>
+          ))}
+        </ul>
+      )
+    }
+
+    <ul class="tarjeta__stack">
+      {data.stack.slice(0, detallado ? 6 : 4).map((tecnologia) => <li>{tecnologia}</li>)}
+    </ul>
+
+    <span class="tarjeta__cta">
+      Ver el proyecto
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path
+          d="M5 12h13m0 0-5.5-5.5M18 12l-5.5 5.5"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"></path>
+      </svg>
+    </span>
+  </a>
+</article>
+
+<style>
+  .tarjeta {
+    position: relative;
+    border-radius: var(--radius-lg);
+    border: var(--border-width) solid var(--border);
+    background: var(--surface);
+    overflow: hidden;
+    transition:
+      transform var(--duration-base) var(--ease-out),
+      border-color var(--duration-base) var(--ease-out),
+      box-shadow var(--duration-base) var(--ease-out);
+  }
+
+  .tarjeta::before {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    top: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--proyecto-color), transparent 85%);
+    opacity: 0.85;
+  }
+
+  .tarjeta__enlace {
+    display: grid;
+    gap: var(--space-3);
+    padding: var(--space-5);
+    height: 100%;
+    align-content: start;
+  }
+
+  .tarjeta:hover {
+    transform: translateY(-3px);
+    border-color: var(--border-strong);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .tarjeta__cabecera {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+
+  .tarjeta__rol {
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    font-weight: 500;
+    letter-spacing: var(--tracking-widest);
+    text-transform: uppercase;
+    color: var(--proyecto-color);
+  }
+
+  .tarjeta__titulo {
+    font-size: var(--text-xl);
+    letter-spacing: var(--tracking-tight);
+  }
+
+  .tarjeta__lema {
+    color: var(--text-muted);
+    font-size: var(--text-base);
+    line-height: var(--leading-snug);
+  }
+
+  .tarjeta__aspectos {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .tarjeta__aspectos li {
+    position: relative;
+    padding-inline-start: var(--space-4);
+    color: var(--text-subtle);
+    font-size: var(--text-sm);
+    line-height: var(--leading-snug);
+  }
+
+  .tarjeta__aspectos li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.55em;
+    width: 0.35rem;
+    height: 0.35rem;
+    border-radius: 50%;
+    background: var(--proyecto-color);
+    opacity: 0.7;
+  }
+
+  .tarjeta__stack {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .tarjeta__stack li {
+    padding: 0.12rem 0.5rem;
+    border-radius: var(--radius-sm);
+    border: var(--border-width) solid var(--border-subtle);
+    background: var(--surface-inset);
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    color: var(--text-subtle);
+  }
+
+  .tarjeta__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-block-start: var(--space-2);
+    font-size: var(--text-sm);
+    font-weight: 550;
+    color: var(--text);
+  }
+
+  .tarjeta__cta svg {
+    transition: transform var(--duration-base) var(--ease-out);
+  }
+
+  .tarjeta:hover .tarjeta__cta {
+    color: var(--proyecto-color);
+  }
+
+  .tarjeta:hover .tarjeta__cta svg {
+    transform: translateX(3px);
+  }
+</style>
