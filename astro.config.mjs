@@ -4,15 +4,7 @@ import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import { satteri } from '@astrojs/markdown-satteri';
 import { pluginEnlacesBase } from './src/plugins/enlaces-base.mjs';
-
-/**
- * Prefijo bajo el que se publica el sitio.
- *
- * GitHub Pages sirve el repositorio `FunshiEngine/WebSite` en
- * `https://funshiengine.github.io/WebSite/`. Es la unica fuente de verdad: la
- * usan tanto `base` como el plugin que corrige los enlaces del contenido.
- */
-const BASE = '/WebSite';
+import { BASE } from './src/lib/base.mjs';
 
 /**
  * Configuracion del sitio de la organizacion FunshiEngine.

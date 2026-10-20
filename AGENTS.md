@@ -64,10 +64,9 @@ Reglas al tocar enlaces:
   base, duplica separadores, no existe o lleva mal la barra final. El
   verificador también revisa `sitemap-*.xml` y `rss.xml`.
 
-`BASE` tiene dos fuentes de verdad que deben coincidir: la constante `BASE` de
-`astro.config.mjs` (la que usa el plugin) y `import.meta.env.BASE_URL` (la que
-inyecta Astro). `src/lib/site.ts` normaliza esta última quitándole la barra
-final, porque Astro la entrega con ella.
+`BASE` tiene una sola fuente de verdad: `src/lib/base.mjs`. La importan tanto
+`astro.config.mjs` (para `base` y para el plugin) como `src/lib/site.ts` (para
+`ruta()` y `recurso()`). Si cambia el prefijo de publicación, se cambia ahí.
 
 ## Convenciones del código
 

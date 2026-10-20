@@ -1,5 +1,6 @@
 import rss from '@astrojs/rss';
-import { BASE, SITE, ruta } from '../lib/site';
+import { BASE } from '../lib/base.mjs';
+import { SITE, ruta } from '../lib/site';
 import { obtenerProyectos } from '../lib/proyectos';
 import { obtenerDocs } from '../lib/docs';
 

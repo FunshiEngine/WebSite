@@ -54,7 +54,7 @@ src/
     proyectos/           Fichas de los proyectos (una por repositorio)
     docs/                Documentacion en MDX
   layouts/               Plantillas de pagina
-  lib/                   Utilidades compartidas (rutas, proyectos, docs)
+  lib/                   Utilidades compartidas (base, rutas, proyectos, docs)
   pages/                 Paginas y rutas del sitio
   plugins/               Plugins del pipeline de Markdown
   styles/                Tokens de diseno y estilos globales
@@ -86,6 +86,9 @@ Ver la [guía de estilo](/docs/guia/estilo-de-codigo/).
 
 El plugin `src/plugins/enlaces-base.mjs` lo antepone durante la compilación.
 Es idempotente: una ruta que ya lleva la base no se toca dos veces.
+
+El prefijo vive en un único sitio, `src/lib/base.mjs`, que lo comparten la
+configuración de Astro y las funciones de ruta.
 
 `npm run verificar` es la red de seguridad: falla si algún enlace interno se
 sale de la base, si duplica separadores, si no existe o si su barra final no

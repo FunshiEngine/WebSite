@@ -1,3 +1,5 @@
+import { BASE } from './base.mjs';
+
 /**
  * Metadatos globales del sitio.
  *
@@ -15,7 +17,7 @@ export const SITE = {
   idioma: 'es',
   locale: 'es_ES',
   url: 'https://funshiengine.github.io',
-  base: '/WebSite',
+  base: BASE,
   organizacion: 'FunshiEngine',
   repositorio: 'https://github.com/FunshiEngine',
   copyright: new Date().getFullYear(),
@@ -34,15 +36,15 @@ export function repoFileUrl(nombre: string, ruta: string, rama = 'main'): string
 /**
  * Prefijo bajo el que se publica el sitio.
  *
- * Astro lo inyecta desde `base` en `astro.config.mjs`. GitHub Pages sirve el
- * repositorio `FunshiEngine/WebSite` en `https://funshiengine.github.io/WebSite/`,
- * de modo que **ningun enlace interno puede empezar por `/`**: Astro solo
- * antepone la base a los recursos que genera, no a los enlaces escritos a mano.
+ * GitHub Pages sirve el repositorio `FunshiEngine/WebSite` en
+ * `https://funshiengine.github.io/WebSite/`, de modo que **ningun enlace
+ * interno puede empezar por `/`**: Astro solo antepone la base a los recursos
+ * que genera, no a los enlaces escritos a mano.
  *
- * `import.meta.env.BASE_URL` llega con barra final (`/WebSite/`); aqui se
- * normaliza sin ella para componer rutas sin duplicar separadores.
+ * El valor vive en `src/lib/base.mjs`, que es la unica fuente de verdad y la
+ * comparten la configuracion de Astro y este modulo.
  */
-export const BASE = import.meta.env.BASE_URL.replace(/\/+$/, '');
+export { BASE };
 
 /**
  * Construye la ruta publica de una pagina interna del sitio.
