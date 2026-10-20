@@ -1,0 +1,53 @@
+name: Desplegar
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# GitHub Pages no admite despliegues simultaneos: se espera al anterior en
+# lugar de cancelarlo, para no dejar el sitio a medio publicar.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  desplegar:
+    name: Publicar en GitHub Pages
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.desplegue.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.22.0
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Configurar Pages
+        uses: actions/configure-pages@v5
+
+      - name: Compilar el sitio
+        run: npm run build
+
+      - name: Comprobar los enlaces internos
+        run: npm run verificar
+
+      - name: Subir el artefacto
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
+
+      - id: despliegue
+        name: Desplegar
+        uses: actions/deploy-pages@v4
