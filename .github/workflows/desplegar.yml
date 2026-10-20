@@ -36,10 +36,6 @@ jobs:
 
       - name: Configurar Pages
         uses: actions/configure-pages@v5
-        with:
-          # Habilita Pages en el repositorio la primera vez. Si ya esta
-          # activo, no hace nada.
-          enablement: true
 
       - name: Compilar el sitio
         run: npm run build
