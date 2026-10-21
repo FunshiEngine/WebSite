@@ -2,7 +2,7 @@
 clave: funshiengine-vulkan
 nombre: FunshiEngineVK
 lema: El mismo motor, resuelto sobre Vulkan
-rol: Backend
+rol: Motor
 estado: activo
 stack:
   - C++17
