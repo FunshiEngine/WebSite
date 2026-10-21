@@ -154,6 +154,7 @@ npm run preview   # http://localhost:4321/WebSite/
   ejecución.
 - Jerarquía por tamaño, peso y líneas: sin sombras, degradados ni superficies
   curvas. El color de acento se reserva para los enlaces y los estados activos.
+- Sin logotipo: la marca es el nombre escrito. En los iconos va la inicial.
 - El resaltado de código tiene dos paletas (`github-light` y
   `github-dark-dimmed`) y sigue al tema del sitio, no al del sistema.
 - Todo el movimiento respeta `prefers-reduced-motion`.
