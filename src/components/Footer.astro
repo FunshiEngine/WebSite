@@ -1,5 +1,5 @@
 ---
-import Logo from './Logo.astro';
+import Marca from './Marca.astro';
 import { SITE, ruta, recurso } from '../lib/site';
 import { obtenerProyectos } from '../lib/proyectos';
 
@@ -10,7 +10,7 @@ const anio = SITE.copyright;
 <footer class="pie">
   <div class="pie__interior container container--wide">
     <div class="pie__columna pie__columna--marca">
-      <Logo />
+      <Marca />
       <p class="pie__lema">{SITE.descripcionCorta}</p>
       <p class="pie__licencia">
         Código y documentación bajo licencia <strong>Apache 2.0</strong>.
@@ -33,10 +33,10 @@ const anio = SITE.copyright;
     <nav class="pie__columna" aria-label="Documentación">
       <h2 class="pie__titulo">Documentación</h2>
       <ul class="pie__lista">
-        <li><a href={ruta('/docs/')}>Indice general</a></li>
-        <li><a href={ruta('/docs/arquitectura/')}>Arquitectura de la organizacion</a></li>
+        <li><a href={ruta('/docs/')}>Índice general</a></li>
+        <li><a href={ruta('/docs/arquitectura/')}>Arquitectura de la organización</a></li>
         <li><a href={ruta('/docs/guia/inicio/')}>Primeros pasos</a></li>
-        <li><a href={ruta('/docs/guia/estilo-de-codigo/')}>Estilo de codigo</a></li>
+        <li><a href={ruta('/docs/guia/estilo-de-codigo/')}>Estilo de código</a></li>
         <li><a href={ruta('/docs/guia/ramas-y-commits/')}>Ramas y commits</a></li>
       </ul>
     </nav>
@@ -55,7 +55,6 @@ const anio = SITE.copyright;
 
   <div class="pie__barra container container--wide">
     <p>&copy; {anio} {SITE.organizacion}. Documentación bajo licencia Apache 2.0.</p>
-    <p class="pie__hecho">Sitio estático generado con Astro.</p>
   </div>
 </footer>
 
@@ -134,17 +133,9 @@ const anio = SITE.copyright;
   }
 
   .pie__barra {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-3);
-    justify-content: space-between;
     padding-block: var(--space-4);
     border-block-start: var(--border-width) solid var(--border-subtle);
     color: var(--text-subtle);
     font-size: var(--text-sm);
-  }
-
-  .pie__hecho {
-    color: var(--text-subtle);
   }
 </style>

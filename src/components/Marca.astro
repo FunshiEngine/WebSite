@@ -1,0 +1,26 @@
+---
+/**
+ * Nombre de la organizacion, en texto.
+ *
+ * El sitio no lleva un emblema: la marca es el nombre escrito, con la
+ * parte que identifica el proyecto en un tono mas discreto.
+ */
+---
+
+<span class="marca">
+  Funshi<span class="marca__proyecto">Engine</span>
+</span>
+
+<style>
+  .marca {
+    font-weight: 600;
+    font-size: var(--text-md);
+    letter-spacing: var(--tracking-tight);
+    white-space: nowrap;
+  }
+
+  .marca__proyecto {
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+</style>
